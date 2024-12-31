@@ -14,6 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         title: Text("Login"),
       ),
+      body: Placeholder(),
     );
   }
 }
