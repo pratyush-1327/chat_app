@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "94709603331",
+    "project_id": "chatapp-c6355",
+    "storage_bucket": "chatapp-c6355.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:94709603331:android:3c6572b2eaa801dfcf8236",
+        "android_client_info": {
+          "package_name": "com.prats.chatapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDs_cHjAKVS8Sqf3PQevdB2EY_iWe32c_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
