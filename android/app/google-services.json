@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:94709603331:android:acaccb4be601d1f6cf8236",
+        "android_client_info": {
+          "package_name": "com.example.chat_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDs_cHjAKVS8Sqf3PQevdB2EY_iWe32c_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:94709603331:android:3c6572b2eaa801dfcf8236",
         "android_client_info": {
           "package_name": "com.prats.chatapp"
