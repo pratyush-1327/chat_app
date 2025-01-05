@@ -3,6 +3,7 @@ import 'package:chat_app/screens/home_screen.dart';
 import 'package:chat_app/screens/signup_screen.dart';
 import 'package:chat_app/screens/widgets/logfield.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -76,12 +77,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: ButtonStyle(
                         //backgroundColor: Colors.white,
                         padding: WidgetStateProperty.all<EdgeInsets>(
-                            EdgeInsets.fromLTRB(50, 10, 50, 10)),
+                            EdgeInsets.fromLTRB(50, 7, 50, 7)),
                       ),
                       onPressed: () async {
                         try {
                           await authProvider.signIn(
                               _emailController.text, _passController.text);
+                          Fluttertoast.showToast(msg: "Login successful");
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(

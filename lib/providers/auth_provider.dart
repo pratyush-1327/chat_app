@@ -15,18 +15,19 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signUp(
-      String email, String password, String name, String imageUrl) async {
-    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email, password: password);
-    await _firestore.collection('users').doc(userCredential.user!.uid).set({
-      'uid': userCredential.user!.uid,
-      'email': email,
-      'name': name,
-      'imageUrl': imageUrl,
-    });
-    notifyListeners();
-  }
+  // Future<void> signUp(
+  //     String email, String password, String name, String imageUrl) async {
+  //   UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+  //       email: email, password: password);
+  //       final imageurl= await _uploadImage(_image!);
+  //   await _firestore.collection('users').doc(userCredential.user!.uid).set({
+  //     'uid': userCredential.user!.uid,
+  //     'email': email,
+  //     'name': name,
+  //     'imageUrl': imageUrl,
+  //   });
+  //   notifyListeners();
+  // }
 
   Future<void> signOut() async {
     await _auth.signOut();

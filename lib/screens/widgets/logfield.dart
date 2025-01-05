@@ -31,7 +31,7 @@ class MyTextField extends StatelessWidget {
             style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
-                fontSize: 15.sp),
+                fontSize: 16.sp),
           ),
           ClipRect(
             child: TextFormField(
@@ -45,7 +45,10 @@ class MyTextField extends StatelessWidget {
               decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
-                  borderSide: const BorderSide(width: 0.2),
+                  borderSide: BorderSide(
+                    width: 2,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(width: 0.2),
@@ -55,7 +58,9 @@ class MyTextField extends StatelessWidget {
                 filled: true,
                 hintText: hintText,
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontSize: 17,
+                  color:
+                      Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
                 ),
               ),
             ),
