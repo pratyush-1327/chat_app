@@ -14,10 +14,11 @@ class ChatProvider with ChangeNotifier {
   }
 
   Stream<QuerySnapshot> searchUsers(String query) {
-    return _firestore
-        .collection("chats")
-        .where('email', isGreaterThanOrEqualTo: query)
-        .where('email', isLessThanOrEqualTo: query + '\uf8ff')
+    debugPrint('Searching for users with query: $query');
+    return FirebaseFirestore.instance
+        .collection('users')
+        .where('name', isGreaterThanOrEqualTo: query)
+        .where('name', isLessThanOrEqualTo: '$query\uf8ff')
         .snapshots();
   }
 

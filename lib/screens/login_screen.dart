@@ -110,10 +110,38 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SignupScreen()));
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        SignupScreen(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  const beginOffset = Offset(1.0, 0.0);
+                                  const endOffset = Offset.zero;
+                                  const curve = Curves.easeInOut;
+
+                                  var tweenOffset =
+                                      Tween(begin: beginOffset, end: endOffset)
+                                          .chain(CurveTween(curve: curve));
+                                  var slideAnimation =
+                                      animation.drive(tweenOffset);
+
+                                  var fadeAnimation =
+                                      Tween(begin: 0.0, end: 1.0)
+                                          .animate(animation);
+
+                                  return SlideTransition(
+                                    position: slideAnimation,
+                                    child: FadeTransition(
+                                      opacity: fadeAnimation,
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
                           },
                           child: Text(
                             "Register Now",
