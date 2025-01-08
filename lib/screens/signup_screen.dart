@@ -76,13 +76,12 @@ class _SignupScreenState extends State<SignupScreen> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF8BC6EC), // Background color
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Color(0xFF8BC6EC),
-                      Color(0xFF9599E2),
+                      Color.fromARGB(255, 131, 175, 226),
+                      Color.fromARGB(255, 139, 236, 163),
                     ],
                   ),
                 ),
