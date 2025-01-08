@@ -1,3 +1,4 @@
+import 'package:chat_app/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 
 class ChatTile extends StatelessWidget {
@@ -28,7 +29,14 @@ class ChatTile extends StatelessWidget {
               style: TextStyle(fontSize: 12, color: Colors.blueGrey),
             ),
             onTap: () {
-              // Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatScreen(),));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatScreen(
+                      receiverId: receiverData['uid'],
+                      chatId: chatId,
+                    ),
+                  ));
             },
           )
         : Container();

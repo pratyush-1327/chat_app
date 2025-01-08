@@ -80,8 +80,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Color.fromARGB(255, 131, 175, 226),
                       Color.fromARGB(255, 139, 236, 163),
+                      Color.fromARGB(255, 131, 175, 226),
                     ],
                   ),
                 ),

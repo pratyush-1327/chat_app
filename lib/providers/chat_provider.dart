@@ -56,7 +56,10 @@ class ChatProvider with ChangeNotifier {
           .where((chat) => chat['users'].contains(receiverId))
           .toList();
       if (chats.isNotEmpty) {
+        debugPrint('Chat found: ${chats.first.id}');
         return chats.first.id;
+      } else {
+        debugPrint('No chat found for receiverId: $receiverId');
       }
     }
     return null;

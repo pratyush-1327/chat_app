@@ -1,4 +1,5 @@
 import 'package:chat_app/providers/chat_provider.dart';
+import 'package:chat_app/screens/chat_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -125,7 +126,38 @@ class UserTile extends StatelessWidget {
       title: Text(name),
       subtitle: Text(email),
       onTap: () async {
-        // Handle user tile tap
+        final chatId = await chatProvider.getChatRoom(userId) ??
+            await chatProvider.createChatRoom(userId);
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => ChatScreen(
+              chatId: chatId,
+              receiverId: userId,
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              const beginOffset = Offset(1.0, 0.0);
+              const endOffset = Offset.zero;
+              const curve = Curves.easeInOut;
+
+              var tweenOffset = Tween(begin: beginOffset, end: endOffset)
+                  .chain(CurveTween(curve: curve));
+              var slideAnimation = animation.drive(tweenOffset);
+
+              var fadeAnimation =
+                  Tween(begin: 0.0, end: 1.0).animate(animation);
+
+              return SlideTransition(
+                position: slideAnimation,
+                child: FadeTransition(
+                  opacity: fadeAnimation,
+                  child: child,
+                ),
+              );
+            },
+          ),
+        );
       },
     );
   }
