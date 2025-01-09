@@ -18,9 +18,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final _auth = FirebaseAuth.instance;
 
   User? loggedInUser;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getCurrentUser();
   }
@@ -35,27 +35,40 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<Map<String, dynamic>> _fetchChatData(String chatId) async {
-    final chatDoc =
-        await FirebaseFirestore.instance.collection('chats').doc(chatId).get();
-    final chatData = chatDoc.data();
-    final users = chatData!['users'] as List<dynamic>;
-    final receiverId = users.firstWhere((id) => id != loggedInUser)!.uid;
-    final userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(receiverId)
-        .get();
-    final userData = userDoc.data();
-    return {
-      'chatId': chatId,
-      'lastMessage': chatData['lastMessage'] ?? '',
-      'timestamp': chatData['timestamp']?.toDate() ?? DateTime.now(),
-      'userData': userData
-    };
+    try {
+      final chatDoc = await FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chatId)
+          .get();
+      final chatData = chatDoc.data();
+
+      if (chatData == null || !chatData.containsKey('user')) {
+        print("Chat data or 'users' field is missing.");
+        return {};
+      }
+
+      final users = chatData['user'] as List<dynamic>;
+      final receiverId = users.firstWhere((id) => id != loggedInUser!.uid);
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(receiverId)
+          .get();
+      final userData = userDoc.data();
+      return {
+        'chatId': chatId,
+        'lastMessage': chatData['lastMessage'] ?? '',
+        'timestamp': chatData['timestamp']?.toDate() ?? DateTime.now(),
+        'userData': userData
+      };
+    } catch (e) {
+      print("Error fetching chat data: $e");
+      return {};
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final _chatProvider = Provider.of<ChatProvider>(context);
+    final chatProvider = Provider.of<ChatProvider>(context);
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -76,45 +89,61 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           ],
         ),
-        body: Column(
-          children: [
-            Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-              stream: _chatProvider.getChats(loggedInUser!.uid),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                final chatDocs = snapshot.data!.docs;
-                return FutureBuilder<List<Map<String, dynamic>>>(
-                  future: Future.wait(
-                      chatDocs.map((chatDoc) => _fetchChatData(chatDoc.id))),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    final chatDataList = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: chatDataList.length,
-                      itemBuilder: (context, index) {
-                        final chatData = chatDataList[index];
-                        return ChatTile(
-                            chatId: chatData['chatId'],
+        body: loggedInUser == null
+            ? Center(child: Text("Please log in"))
+            : StreamBuilder<QuerySnapshot>(
+                stream: chatProvider.getChats(loggedInUser!.uid),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(
+                        child: Text('Error: ${snapshot.error.toString()}'));
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(child: Text('No chats available'));
+                  }
+
+                  final chatDocs = snapshot.data!.docs;
+                  return FutureBuilder<List<Map<String, dynamic>>>(
+                    future:
+                        Future.wait(chatDocs.map((chatDoc) => _fetchChatData(
+                              chatDoc.id,
+                            ))),
+                    builder: (context, futureSnapshot) {
+                      if (futureSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (futureSnapshot.hasError) {
+                        return Center(
+                            child: Text(
+                                'Error: ${futureSnapshot.error.toString()}'));
+                      }
+                      if (!futureSnapshot.hasData ||
+                          futureSnapshot.data!.isEmpty) {
+                        return const Center(
+                            child: Text('No chat data available'));
+                      }
+
+                      final chatDataList = futureSnapshot.data!;
+                      return ListView.builder(
+                        itemCount: chatDataList.length,
+                        itemBuilder: (context, index) {
+                          final chatData = chatDataList[index];
+                          return ChatTile(
+                            chatId: chatData!['chatId'],
                             lastMessage: chatData['lastMessage'],
                             timestamp: chatData['timestamp'],
-                            receiverData: chatData['userData']);
-                      },
-                    );
-                  },
-                );
-              },
-            ))
-          ],
-        ),
+                            receiverData: chatData['userData'],
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(
@@ -148,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.surfaceBright,
-          child: Icon(Icons.search_rounded),
+          child: const Icon(Icons.search_rounded),
         ),
       ),
     );

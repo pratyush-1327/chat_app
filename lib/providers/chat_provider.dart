@@ -9,7 +9,7 @@ class ChatProvider with ChangeNotifier {
   Stream<QuerySnapshot> getChats(String userId) {
     return _firestore
         .collection("chats")
-        .where('users', arrayContains: userId)
+        .where('user', arrayContains: userId)
         .snapshots();
   }
 
@@ -34,7 +34,7 @@ class ChatProvider with ChangeNotifier {
           .add({
         'senderId': currentUser.uid,
         'receiverId': receiverId,
-        'messageBody': 'message',
+        'messageBody': message,
         'timestamp': FieldValue.serverTimestamp(),
       });
       await _firestore.collection('chats').doc(chatId).set({
@@ -50,10 +50,10 @@ class ChatProvider with ChangeNotifier {
     if (currentUser != null) {
       final chatQuery = await _firestore
           .collection('chats')
-          .where('users', arrayContains: currentUser.uid)
+          .where('user', arrayContains: currentUser.uid)
           .get();
       final chats = chatQuery.docs
-          .where((chat) => chat['users'].contains(receiverId))
+          .where((chat) => chat['user'].contains(receiverId))
           .toList();
       if (chats.isNotEmpty) {
         debugPrint('Chat found: ${chats.first.id}');
@@ -69,8 +69,8 @@ class ChatProvider with ChangeNotifier {
     final currentUser = _auth.currentUser;
     if (currentUser != null) {
       final chatRoom = await _firestore.collection('chats').add({
-        'users': [currentUser.uid, receiverId],
-        'lastmessage': '',
+        'user': [currentUser.uid, receiverId],
+        'lastMessage': '',
         'timestamp': FieldValue.serverTimestamp(),
       });
       return chatRoom.id;
