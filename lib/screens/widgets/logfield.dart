@@ -37,8 +37,7 @@ class MyTextField extends StatelessWidget {
             child: TextFormField(
               keyboardType: keyboardType,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
+                  color: Theme.of(context).colorScheme.primary, fontSize: 18),
               controller: controller,
               obscureText: obscureText,
               validator: validator,
@@ -59,8 +58,10 @@ class MyTextField extends StatelessWidget {
                 hintText: hintText,
                 hintStyle: TextStyle(
                   fontSize: 17,
-                  color:
-                      Theme.of(context).colorScheme.onPrimary.withOpacity(0.5),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSecondaryFixedVariant
+                      .withAlpha(100),
                 ),
               ),
             ),

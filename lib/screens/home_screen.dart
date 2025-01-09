@@ -1,11 +1,12 @@
-import 'package:chat_app/providers/chat_provider.dart';
-import 'package:chat_app/screens/login_screen.dart';
-import 'package:chat_app/screens/search_screen.dart';
-import 'package:chat_app/screens/widgets/chat_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../providers/chat_provider.dart';
+import 'login_screen.dart';
+import 'search_screen.dart';
+import 'widgets/chat_tile.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -79,8 +80,35 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
               onPressed: () {
                 _auth.signOut();
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        LoginScreen(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const beginOffset = Offset(1.0, 0.0);
+                      const endOffset = Offset.zero;
+                      const curve = Curves.easeInOut;
+
+                      var tweenOffset =
+                          Tween(begin: beginOffset, end: endOffset)
+                              .chain(CurveTween(curve: curve));
+                      var slideAnimation = animation.drive(tweenOffset);
+
+                      var fadeAnimation =
+                          Tween(begin: 0.0, end: 1.0).animate(animation);
+
+                      return SlideTransition(
+                        position: slideAnimation,
+                        child: FadeTransition(
+                          opacity: fadeAnimation,
+                          child: child,
+                        ),
+                      );
+                    },
+                  ),
+                );
               },
               icon: Icon(
                 Icons.logout,

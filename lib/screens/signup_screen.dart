@@ -1,6 +1,5 @@
 import 'dart:io';
-import 'package:chat_app/screens/login_screen.dart';
-import 'package:chat_app/screens/widgets/logfield.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,6 +8,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:responsive_sizer/responsive_sizer.dart';
+
+import 'login_screen.dart';
+import 'widgets/logfield.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -46,6 +48,47 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _signUp() async {
+    bool isValid = true;
+
+    if (_nameController.text.isEmpty) {
+      setState(() {
+        _nameController.text = '';
+        // _nameController.errorText = 'Please enter your name.';
+        Fluttertoast.showToast(msg: "Please enter a name");
+      });
+      isValid = false;
+    }
+
+    if (_emailController.text.isEmpty) {
+      setState(() {
+        _emailController.text = '';
+        // _emailController.errorText = 'Please enter your email.';
+        Fluttertoast.showToast(msg: "Please enter  valid email");
+      });
+      isValid = false;
+    }
+
+    if (_passController.text.isEmpty) {
+      setState(() {
+        _passController.text = '';
+
+        Fluttertoast.showToast(msg: "Please enter a valid password");
+      });
+      isValid = false;
+    }
+
+    if (_image == null) {
+      setState(() {
+        Fluttertoast.showToast(
+            msg: "Please select a profile image to continue");
+      });
+      isValid = false;
+    }
+
+    if (!isValid) {
+      return; // Stop signup if any field is invalid
+    }
+
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
@@ -58,8 +101,32 @@ class _SignupScreenState extends State<SignupScreen> {
         'imageUrl': imageUrl,
       });
       Fluttertoast.showToast(msg: "Sign-Up was successful, Please Login");
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              LoginScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const beginOffset = Offset(1.0, 0.0);
+            const endOffset = Offset.zero;
+            const curve = Curves.easeInOut;
+
+            var tweenOffset = Tween(begin: beginOffset, end: endOffset)
+                .chain(CurveTween(curve: curve));
+            var slideAnimation = animation.drive(tweenOffset);
+
+            var fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(animation);
+
+            return SlideTransition(
+              position: slideAnimation,
+              child: FadeTransition(
+                opacity: fadeAnimation,
+                child: child,
+              ),
+            );
+          },
+        ),
+      );
     } catch (e) {
       print(e);
     }
@@ -76,14 +143,7 @@ class _SignupScreenState extends State<SignupScreen> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color.fromARGB(255, 139, 236, 163),
-                      Color.fromARGB(255, 131, 175, 226),
-                    ],
-                  ),
+                  color: Theme.of(context).colorScheme.surfaceBright,
                 ),
               ),
               Column(

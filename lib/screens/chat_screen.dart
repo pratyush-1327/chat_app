@@ -1,8 +1,9 @@
-import 'package:chat_app/providers/chat_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../providers/chat_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final String? chatId;

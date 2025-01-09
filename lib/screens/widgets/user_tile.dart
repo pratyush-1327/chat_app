@@ -1,6 +1,7 @@
-import 'package:chat_app/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../providers/chat_provider.dart';
 
 class UserTile extends StatelessWidget {
   final String userId;

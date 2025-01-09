@@ -1,7 +1,7 @@
-import 'package:chat_app/providers/auth_provider.dart';
-import 'package:chat_app/screens/home_screen.dart';
-import 'package:chat_app/screens/signup_screen.dart';
-import 'package:chat_app/screens/widgets/logfield.dart';
+import 'package:FlutChat/providers/auth_provider.dart';
+import 'package:FlutChat/screens/home_screen.dart';
+import 'package:FlutChat/screens/signup_screen.dart';
+import 'package:FlutChat/screens/widgets/logfield.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -28,14 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color.fromARGB(255, 131, 175, 226),
-                      Color.fromARGB(255, 139, 236, 163),
-                    ],
-                  ),
+                  color: Theme.of(context).colorScheme.surfaceBright,
                 ),
               ),
               Column(
@@ -81,12 +74,41 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         try {
                           await authProvider.signIn(
-                              _emailController.text, _passController.text);
+                            _emailController.text,
+                            _passController.text,
+                          );
                           Fluttertoast.showToast(msg: "Login successful");
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomeScreen()));
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      HomeScreen(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                const beginOffset = Offset(1.0, 0.0);
+                                const endOffset = Offset.zero;
+                                const curve = Curves.easeInOut;
+
+                                var tweenOffset =
+                                    Tween(begin: beginOffset, end: endOffset)
+                                        .chain(CurveTween(curve: curve));
+                                var slideAnimation =
+                                    animation.drive(tweenOffset);
+
+                                var fadeAnimation = Tween(begin: 0.0, end: 1.0)
+                                    .animate(animation);
+
+                                return SlideTransition(
+                                  position: slideAnimation,
+                                  child: FadeTransition(
+                                    opacity: fadeAnimation,
+                                    child: child,
+                                  ),
+                                );
+                              },
+                            ),
+                          );
                         } catch (e) {
                           print(e);
                         }
