@@ -17,6 +17,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -65,59 +67,70 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 50),
-                    child: FilledButton.tonal(
-                      style: ButtonStyle(
-                        //backgroundColor: Colors.white,
-                        padding: WidgetStateProperty.all<EdgeInsets>(
-                            EdgeInsets.fromLTRB(50, 7, 50, 7)),
-                      ),
-                      onPressed: () async {
-                        try {
-                          await authProvider.signIn(
-                            _emailController.text,
-                            _passController.text,
-                          );
-                          Fluttertoast.showToast(msg: "Login successful");
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      HomeScreen(),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                const beginOffset = Offset(1.0, 0.0);
-                                const endOffset = Offset.zero;
-                                const curve = Curves.easeInOut;
+                    child: _isLoading
+                        ? CircularProgressIndicator()
+                        : FilledButton.tonal(
+                            style: ButtonStyle(
+                              //backgroundColor: Colors.white,
+                              padding: WidgetStateProperty.all<EdgeInsets>(
+                                  EdgeInsets.fromLTRB(50, 7, 50, 7)),
+                            ),
+                            onPressed: () async {
+                              setState(() {
+                                _isLoading = true;
+                              });
+                              try {
+                                await authProvider.signIn(
+                                  _emailController.text,
+                                  _passController.text,
+                                );
+                                Fluttertoast.showToast(msg: "Login successful");
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        HomeScreen(),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      const beginOffset = Offset(1.0, 0.0);
+                                      const endOffset = Offset.zero;
+                                      const curve = Curves.easeInOut;
 
-                                var tweenOffset =
-                                    Tween(begin: beginOffset, end: endOffset)
-                                        .chain(CurveTween(curve: curve));
-                                var slideAnimation =
-                                    animation.drive(tweenOffset);
+                                      var tweenOffset = Tween(
+                                              begin: beginOffset,
+                                              end: endOffset)
+                                          .chain(CurveTween(curve: curve));
+                                      var slideAnimation =
+                                          animation.drive(tweenOffset);
 
-                                var fadeAnimation = Tween(begin: 0.0, end: 1.0)
-                                    .animate(animation);
+                                      var fadeAnimation =
+                                          Tween(begin: 0.0, end: 1.0)
+                                              .animate(animation);
 
-                                return SlideTransition(
-                                  position: slideAnimation,
-                                  child: FadeTransition(
-                                    opacity: fadeAnimation,
-                                    child: child,
+                                      return SlideTransition(
+                                        position: slideAnimation,
+                                        child: FadeTransition(
+                                          opacity: fadeAnimation,
+                                          child: child,
+                                        ),
+                                      );
+                                    },
                                   ),
                                 );
-                              },
+                              } catch (e) {
+                                print(e);
+                              } finally {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              }
+                            },
+                            child: Text(
+                              'Log In',
+                              style: TextStyle(fontSize: 21.sp),
                             ),
-                          );
-                        } catch (e) {
-                          print(e);
-                        }
-                      },
-                      child: Text(
-                        'Log In',
-                        style: TextStyle(fontSize: 21.sp),
-                      ),
-                    ),
+                          ),
                   ),
                   SizedBox(
                     height: 10,

@@ -67,17 +67,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final chatProvider = Provider.of<ChatProvider>(context);
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surfaceDim,
-        appBar: AppBar(
-          title: Text("FlutChat"),
-          actions: [
-            IconButton(
+  logout() async {
+    bool confirmed = await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
               onPressed: () {
                 _auth.signOut();
                 Navigator.push(
@@ -110,6 +113,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+
+    return confirmed;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final chatProvider = Provider.of<ChatProvider>(context);
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surfaceDim,
+        appBar: AppBar(
+          title: Text("FlutChat"),
+          actions: [
+            IconButton(
+              onPressed: logout,
               icon: Icon(
                 Icons.logout,
                 color: Theme.of(context).colorScheme.primary,

@@ -27,6 +27,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
   final _storage = FirebaseStorage.instance;
+  bool _isLoading = false;
 
   Future<void> _pickImage() async {
     final pickedFile =
@@ -49,6 +50,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> _signUp() async {
     bool isValid = true;
+    setState(() {
+      _isLoading = true;
+    });
 
     if (_nameController.text.isEmpty) {
       setState(() {
@@ -129,6 +133,10 @@ class _SignupScreenState extends State<SignupScreen> {
       );
     } catch (e) {
       print(e);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -220,18 +228,20 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 50),
-                    child: FilledButton.tonal(
-                      style: ButtonStyle(
-                        //backgroundColor: Colors.white,
-                        padding: WidgetStateProperty.all<EdgeInsets>(
-                            EdgeInsets.fromLTRB(50, 7, 50, 7)),
-                      ),
-                      onPressed: _signUp,
-                      child: Text(
-                        'Sign Up',
-                        style: TextStyle(fontSize: 21.sp),
-                      ),
-                    ),
+                    child: _isLoading
+                        ? CircularProgressIndicator()
+                        : FilledButton.tonal(
+                            style: ButtonStyle(
+                              //backgroundColor: Colors.white,
+                              padding: WidgetStateProperty.all<EdgeInsets>(
+                                  EdgeInsets.fromLTRB(50, 7, 50, 7)),
+                            ),
+                            onPressed: _signUp,
+                            child: Text(
+                              'Sign Up',
+                              style: TextStyle(fontSize: 21.sp),
+                            ),
+                          ),
                   ),
                   SizedBox(
                     height: 10,
