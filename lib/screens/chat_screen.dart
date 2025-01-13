@@ -73,8 +73,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         ? MessageStream(chatId: chatId!)
                         : Center(child: Text("No messages yet.. Say Hi !"))),
                 Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                  color: Theme.of(context).colorScheme.surfaceContainerLowest,
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                   child: Row(
                     children: [
                       Expanded(
@@ -187,7 +187,7 @@ class MessageBubble extends StatelessWidget {
     final DateTime messageTime =
         (timestamp is Timestamp) ? timestamp.toDate() : DateTime.now();
     return Padding(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment:
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -202,15 +202,16 @@ class MessageBubble extends StatelessWidget {
               ],
               borderRadius: isMe
                   ? BorderRadius.only(
-                      topLeft: Radius.circular(15),
-                      bottomLeft: Radius.circular(15),
-                      bottomRight: Radius.circular(15))
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20))
                   : BorderRadius.only(
-                      topRight: Radius.circular(15),
-                      bottomLeft: Radius.circular(15),
-                      bottomRight: Radius.circular(15)),
-              color:
-                  isMe ? Theme.of(context).colorScheme.primary : Colors.white,
+                      topRight: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20)),
+              color: isMe
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.surfaceContainerHigh,
             ),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
