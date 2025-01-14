@@ -4,6 +4,7 @@ import 'package:FlutChat/screens/signup_screen.dart';
 import 'package:FlutChat/screens/widgets/logfield.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -31,7 +32,21 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceBright,
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context)
+                          .colorScheme
+                          .primaryContainer
+                          .withAlpha(150),
+                      Theme.of(context).colorScheme.surface.withAlpha(100),
+                      Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHigh
+                          .withAlpha(120),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                 ),
               ),
               Form(
@@ -40,6 +55,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    SizedBox(
+                        height: 50.sp,
+                        width: 50.sp,
+                        child: Image(
+                          image: AssetImage(
+                            "assets/speech-bubble.png",
+                          ),
+                          fit: BoxFit.fill,
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 70),
+                      child: Text("Welcome to FlutChat !",
+                          style: GoogleFonts.openSans(
+                            textStyle: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontSize: 21.sp),
+                          )),
+                    ),
                     MyTextField(
                       keyboardType: TextInputType.emailAddress,
                       hintText: "abcd@gmail.com",
@@ -69,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 50),
+                      padding: const EdgeInsets.only(top: 100),
                       child: _isLoading
                           ? CircularProgressIndicator()
                           : FilledButton.tonal(
@@ -142,56 +175,57 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Don't have an account?",
-                          style: TextStyle(fontSize: 17.sp),
-                        ),
-                        TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder: (context, animation,
-                                          secondaryAnimation) =>
-                                      SignupScreen(),
-                                  transitionsBuilder: (context, animation,
-                                      secondaryAnimation, child) {
-                                    const beginOffset = Offset(1.0, 0.0);
-                                    const endOffset = Offset.zero;
-                                    const curve = Curves.easeInOut;
+                    Padding(
+                      padding: const EdgeInsets.only(top: 100),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Don't have an account?",
+                            style: TextStyle(fontSize: 16.sp),
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        SignupScreen(),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      const beginOffset = Offset(1.0, 0.0);
+                                      const endOffset = Offset.zero;
+                                      const curve = Curves.easeInOut;
 
-                                    var tweenOffset = Tween(
-                                            begin: beginOffset, end: endOffset)
-                                        .chain(CurveTween(curve: curve));
-                                    var slideAnimation =
-                                        animation.drive(tweenOffset);
+                                      var tweenOffset = Tween(
+                                              begin: beginOffset,
+                                              end: endOffset)
+                                          .chain(CurveTween(curve: curve));
+                                      var slideAnimation =
+                                          animation.drive(tweenOffset);
 
-                                    var fadeAnimation =
-                                        Tween(begin: 0.0, end: 1.0)
-                                            .animate(animation);
+                                      var fadeAnimation =
+                                          Tween(begin: 0.0, end: 1.0)
+                                              .animate(animation);
 
-                                    return SlideTransition(
-                                      position: slideAnimation,
-                                      child: FadeTransition(
-                                        opacity: fadeAnimation,
-                                        child: child,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                            child: Text(
-                              "Register Now",
-                              style: TextStyle(fontSize: 17.sp),
-                            ))
-                      ],
+                                      return SlideTransition(
+                                        position: slideAnimation,
+                                        child: FadeTransition(
+                                          opacity: fadeAnimation,
+                                          child: child,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Register Now",
+                                style: TextStyle(fontSize: 16.sp),
+                              ))
+                        ],
+                      ),
                     ),
                   ],
                 ),

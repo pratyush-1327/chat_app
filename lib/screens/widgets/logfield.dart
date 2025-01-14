@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class MyTextField extends StatelessWidget {
@@ -22,17 +23,17 @@ class MyTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 10.sp),
+      padding: EdgeInsets.symmetric(horizontal: 16.sp, vertical: 7.sp),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            labeltext,
-            style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
-                fontSize: 16.sp),
-          ),
+          Text(labeltext,
+              style: GoogleFonts.lato(
+                textStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.sp),
+              )),
           ClipRect(
             child: TextFormField(
               keyboardType: keyboardType,

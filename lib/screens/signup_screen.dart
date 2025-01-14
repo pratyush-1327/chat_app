@@ -126,7 +126,21 @@ class _SignupScreenState extends State<SignupScreen> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceBright,
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context)
+                          .colorScheme
+                          .primaryContainer
+                          .withAlpha(150),
+                      Theme.of(context).colorScheme.surface.withAlpha(100),
+                      Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHigh
+                          .withAlpha(120),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                 ),
               ),
               Form(
@@ -229,7 +243,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       children: [
                         Text(
                           "Already have an account?",
-                          style: TextStyle(fontSize: 17.sp),
+                          style: TextStyle(fontSize: 16.sp),
                         ),
                         TextButton(
                             onPressed: () {
@@ -268,7 +282,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             },
                             child: Text(
                               "Login Now!",
-                              style: TextStyle(fontSize: 17.sp),
+                              style: TextStyle(fontSize: 16.sp),
                             ))
                       ],
                     ),
