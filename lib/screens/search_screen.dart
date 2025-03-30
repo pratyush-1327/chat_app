@@ -1,165 +1,116 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:FlutChat/features/chat/repositories/chat_provider.dart';
+import 'package:FlutChat/models/search_result_model.dart';
+import 'package:FlutChat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../providers/chat_provider.dart';
-import 'chat_screen.dart';
+final searchProvider = StateProvider<String>((ref) => '');
 
-class SearchScreen extends StatefulWidget {
+final searchResultsProvider = StreamProvider<List<SearchResultModel>>((ref) {
+  final query = ref.watch(searchProvider);
+  if (query.isEmpty) return const Stream.empty();
+  final chatRepository = ref.read(chatRepositoryProvider);
+  return chatRepository.searchUsers(query);
+});
+
+class SearchScreen extends ConsumerWidget {
   const SearchScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final searchQuery = ref.watch(searchProvider);
+    final searchResults = ref.watch(searchResultsProvider);
+    final chatProvider = ref.read(chatRepositoryProvider);
 
-class _SearchScreenState extends State<SearchScreen> {
-  final _auth = FirebaseAuth.instance;
-  User? loggedInUser;
-  String searchQuery = '';
-
-  @override
-  void initState() {
-    super.initState();
-    getCurrentUser();
-  }
-
-  void getCurrentUser() {
-    final user = _auth.currentUser;
-    if (user != null) {
-      setState(() {
-        loggedInUser = user;
-      });
-    }
-  }
-
-  void handleSearch(String query) {
-    setState(() {
-      searchQuery = query;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final chatProvider = Provider.of<ChatProvider>(context);
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceDim,
-      appBar: AppBar(
-        title: Text("Search User"),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: TextField(
-              keyboardType: TextInputType.emailAddress,
+      appBar: AppBar(title: const Text("Search Users")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              onChanged: (value) =>
+                  ref.read(searchProvider.notifier).state = value,
               decoration: InputDecoration(
-                hintText: "Search for users by email",
-                hintStyle: TextStyle(
-                  fontSize: 18,
-                  color: Theme.of(context).colorScheme.onPrimaryFixed,
-                ),
-                prefixIcon: Icon(
-                  Icons.search,
-                ),
-                prefixIconColor: Theme.of(context).colorScheme.onPrimaryFixed,
+                labelText: "Search",
+                suffixIcon: const Icon(Icons.search),
               ),
-              onChanged: handleSearch,
             ),
-          ),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: searchQuery.isEmpty
-                  ? Stream.empty()
-                  : chatProvider.searchUsers(searchQuery),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                final users = snapshot.data!.docs;
+            const SizedBox(height: 16),
+            Expanded(
+              child: searchResults.when(
+                data: (users) => users.isEmpty
+                    ? const Center(child: Text("No users found"))
+                    : ListView.builder(
+                        itemCount: users.length,
+                        itemBuilder: (context, index) {
+                          final user = users[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.grey[200],
+                              backgroundImage: (user.imageUrl != null &&
+                                      user.imageUrl.isNotEmpty)
+                                  ? NetworkImage(user.imageUrl)
+                                  : null,
+                              child: (user.imageUrl == null ||
+                                      user.imageUrl.isEmpty)
+                                  ? const Icon(Icons.person, color: Colors.grey)
+                                  : null,
+                            ),
+                            title: Text(user.name),
+                            subtitle: Text(user.email),
+                            onTap: () async {
+                              final chatId =
+                                  await chatProvider.getChatRoom(user.userId) ??
+                                      await chatProvider
+                                          .createChatRoom(user.userId);
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      ChatScreen(
+                                    chatId: chatId,
+                                    receiverId: user.userId,
+                                  ),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const beginOffset = Offset(1.0, 0.0);
+                                    const endOffset = Offset.zero;
+                                    const curve = Curves.easeInOut;
 
-                List<UserTile> userWidgets = [];
-                for (var user in users) {
-                  final userData = user.data() as Map<String, dynamic>;
-                  if (userData['uid'] != loggedInUser!.uid) {
-                    final userWidget = UserTile(
-                      userId: userData['uid'],
-                      name: userData['name'],
-                      email: userData['email'],
-                      imageUrl: userData['imageUrl'],
-                    );
-                    userWidgets.add(userWidget);
-                  }
-                }
-                return ListView(
-                  children: userWidgets,
-                );
-              },
+                                    var tweenOffset = Tween(
+                                            begin: beginOffset, end: endOffset)
+                                        .chain(CurveTween(curve: curve));
+                                    var slideAnimation =
+                                        animation.drive(tweenOffset);
+
+                                    var fadeAnimation =
+                                        Tween(begin: 0.0, end: 1.0)
+                                            .animate(animation);
+
+                                    return SlideTransition(
+                                      position: slideAnimation,
+                                      child: FadeTransition(
+                                        opacity: fadeAnimation,
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Center(child: Text('Error: $err')),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    );
-  }
-}
-
-class UserTile extends StatelessWidget {
-  final String userId;
-  final String name;
-  final String email;
-  final String imageUrl;
-
-  const UserTile({
-    super.key,
-    required this.userId,
-    required this.name,
-    required this.email,
-    required this.imageUrl,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundImage: NetworkImage(imageUrl),
-      ),
-      title: Text(name),
-      subtitle: Text(email),
-      onTap: () async {
-        final chatId = await chatProvider.getChatRoom(userId) ??
-            await chatProvider.createChatRoom(userId);
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => ChatScreen(
-              chatId: chatId,
-              receiverId: userId,
-            ),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              const beginOffset = Offset(1.0, 0.0);
-              const endOffset = Offset.zero;
-              const curve = Curves.easeInOut;
-
-              var tweenOffset = Tween(begin: beginOffset, end: endOffset)
-                  .chain(CurveTween(curve: curve));
-              var slideAnimation = animation.drive(tweenOffset);
-
-              var fadeAnimation =
-                  Tween(begin: 0.0, end: 1.0).animate(animation);
-
-              return SlideTransition(
-                position: slideAnimation,
-                child: FadeTransition(
-                  opacity: fadeAnimation,
-                  child: child,
-                ),
-              );
-            },
-          ),
-        );
-      },
     );
   }
 }

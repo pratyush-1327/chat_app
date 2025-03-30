@@ -1,237 +1,110 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:FlutChat/features/auth/presentation/login_screen.dart';
+import 'package:FlutChat/features/chat/repositories/chat_provider.dart';
+import 'package:FlutChat/models/app_user.dart';
+import 'package:FlutChat/models/chat_room.dart';
+import 'package:FlutChat/screens/widgets/chat_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../providers/chat_provider.dart';
-import 'login_screen.dart';
 import 'search_screen.dart';
-import 'widgets/chat_tile.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  Future<AppUser?> getReceiverData(List<String> users) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final receiverId =
+        users.firstWhere((id) => id != currentUser?.uid, orElse: () => '');
+    if (receiverId.isEmpty) return null;
 
-class _HomeScreenState extends State<HomeScreen> {
-  final _auth = FirebaseAuth.instance;
-
-  User? loggedInUser;
-
-  @override
-  void initState() {
-    super.initState();
-    getCurrentUser();
-  }
-
-  void getCurrentUser() {
-    final user = _auth.currentUser;
-    if (user != null) {
-      setState(() {
-        loggedInUser = user;
-      });
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(receiverId)
+        .get();
+    if (doc.exists) {
+      return AppUser.fromMap(doc.id, doc.data()!);
     }
-  }
-
-  Future<Map<String, dynamic>> _fetchChatData(String chatId) async {
-    try {
-      final chatDoc = await FirebaseFirestore.instance
-          .collection('chats')
-          .doc(chatId)
-          .get();
-      final chatData = chatDoc.data();
-
-      if (chatData == null || !chatData.containsKey('user')) {
-        print("Chat data or 'users' field is missing.");
-        return {};
-      }
-
-      final users = chatData['user'] as List<dynamic>;
-      final receiverId = users.firstWhere((id) => id != loggedInUser!.uid);
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(receiverId)
-          .get();
-      final userData = userDoc.data();
-      return {
-        'chatId': chatId,
-        'lastMessage': chatData['lastMessage'] ?? '',
-        'timestamp': chatData['timestamp']?.toDate() ?? DateTime.now(),
-        'userData': userData
-      };
-    } catch (e) {
-      print("Error fetching chat data: $e");
-      return {};
-    }
-  }
-
-  logout() async {
-    bool confirmed = await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to logout?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                _auth.signOut();
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        LoginScreen(),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      const beginOffset = Offset(1.0, 0.0);
-                      const endOffset = Offset.zero;
-                      const curve = Curves.easeInOut;
-
-                      var tweenOffset =
-                          Tween(begin: beginOffset, end: endOffset)
-                              .chain(CurveTween(curve: curve));
-                      var slideAnimation = animation.drive(tweenOffset);
-
-                      var fadeAnimation =
-                          Tween(begin: 0.0, end: 1.0).animate(animation);
-
-                      return SlideTransition(
-                        position: slideAnimation,
-                        child: FadeTransition(
-                          opacity: fadeAnimation,
-                          child: child,
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-
-    return confirmed;
+    return null;
   }
 
   @override
-  Widget build(BuildContext context) {
-    final chatProvider = Provider.of<ChatProvider>(context);
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surfaceDim,
-        appBar: AppBar(
-          title: Text("FlutChat"),
-          actions: [
-            IconButton(
-              onPressed: logout,
-              icon: Icon(
-                Icons.logout,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            )
-          ],
-        ),
-        body: loggedInUser == null
-            ? Center(child: Text("Please log in"))
-            : StreamBuilder<QuerySnapshot>(
-                stream: chatProvider.getChats(loggedInUser!.uid),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return Center(
-                        child: Text('Error: ${snapshot.error.toString()}'));
-                  }
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(child: Text('No chats available'));
-                  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chatRepository = ref.watch(chatRepositoryProvider);
+    final user = FirebaseAuth.instance.currentUser;
 
-                  final chatDocs = snapshot.data!.docs;
-                  return FutureBuilder<List<Map<String, dynamic>>>(
-                    future:
-                        Future.wait(chatDocs.map((chatDoc) => _fetchChatData(
-                              chatDoc.id,
-                            ))),
-                    builder: (context, futureSnapshot) {
-                      if (futureSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (futureSnapshot.hasError) {
-                        return Center(
-                            child: Text(
-                                'Error: ${futureSnapshot.error.toString()}'));
-                      }
-                      if (!futureSnapshot.hasData ||
-                          futureSnapshot.data!.isEmpty) {
-                        return const Center(
-                            child: Text('No chat data available'));
-                      }
+    if (user == null) {
+      return const LoginScreen();
+    }
 
-                      final chatDataList = futureSnapshot.data!;
-                      return ListView.builder(
-                        itemCount: chatDataList.length,
-                        itemBuilder: (context, index) {
-                          final chatData = chatDataList[index];
-                          return ChatTile(
-                            chatId: chatData!['chatId'],
-                            lastMessage: chatData['lastMessage'],
-                            timestamp: chatData['timestamp'],
-                            receiverData: chatData['userData'],
-                          );
-                        },
-                      );
-                    },
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceDim,
+      appBar: AppBar(
+        title: const Text("FlutChat"),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
+            },
+            icon: Icon(
+              Icons.logout,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          )
+        ],
+      ),
+      body: StreamBuilder<List<ChatRoom>>(
+        stream: chatRepository.getChats(user.uid),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No chats available'));
+          }
+          final chatRooms = snapshot.data!;
+          return ListView.builder(
+            itemCount: chatRooms.length,
+            itemBuilder: (context, index) {
+              final chat = chatRooms[index];
+              return FutureBuilder<AppUser?>(
+                future: getReceiverData(chat.users),
+                builder: (context, userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return const ListTile(title: Text("Loading..."));
+                  }
+                  final receiver = userSnapshot.data;
+                  if (receiver == null) {
+                    return const ListTile(title: Text("User not found"));
+                  }
+                  return ChatTile(
+                    chatId: chat.id,
+                    lastMessage: chat.lastMessage,
+                    timestamp: chat.timestamp,
+                    receiver: receiver,
                   );
                 },
-              ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) =>
-                    SearchScreen(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  const beginOffset = Offset(1.0, 0.0);
-                  const endOffset = Offset.zero;
-                  const curve = Curves.easeInOut;
-
-                  var tweenOffset = Tween(begin: beginOffset, end: endOffset)
-                      .chain(CurveTween(curve: curve));
-                  var slideAnimation = animation.drive(tweenOffset);
-
-                  var fadeAnimation =
-                      Tween(begin: 0.0, end: 1.0).animate(animation);
-
-                  return SlideTransition(
-                    position: slideAnimation,
-                    child: FadeTransition(
-                      opacity: fadeAnimation,
-                      child: child,
-                    ),
-                  );
-                },
-              ),
-            );
-          },
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          foregroundColor: Theme.of(context).colorScheme.surfaceBright,
-          child: const Icon(Icons.search_rounded),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SearchScreen()),
         ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.surfaceBright,
+        child: const Icon(Icons.search_rounded),
       ),
     );
   }

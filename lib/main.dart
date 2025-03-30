@@ -1,13 +1,13 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'firebase_options.dart';
-import 'providers/auth_provider.dart';
-import 'providers/chat_provider.dart';
+import 'features/auth/provider/auth_provider.dart';
+// import 'features/chat/repositories/chat_repository.dart';
 import 'screens/home_screen.dart';
-import 'screens/login_screen.dart';
+import 'features/auth/presentation/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +18,7 @@ void main() async {
     androidProvider: AndroidProvider.playIntegrity, // For Android
     // appleProvider: AppleProvider.deviceCheck, // For iOS
   );
-  runApp(MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -26,45 +26,36 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => ChatProvider()),
-      ],
-      child: MaterialApp(
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.green,
-            brightness: Brightness.light,
-          ),
-          textTheme: TextTheme(
-            displayLarge: const TextStyle(
-              fontSize: 72,
-              fontWeight: FontWeight.bold,
+    return ResponsiveSizer(
+      builder: (context, orientation, screenType) {
+        return MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.green,
+              brightness: Brightness.light,
+            ),
+            textTheme: const TextTheme(
+              displayLarge: TextStyle(
+                fontSize: 72,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        debugShowCheckedModeBanner: false,
-        home: AuthenticationWrapper(),
-      ),
+          debugShowCheckedModeBanner: false,
+          home: const AuthenticationWrapper(),
+        );
+      },
     );
   }
 }
 
-class AuthenticationWrapper extends StatelessWidget {
+class AuthenticationWrapper extends ConsumerWidget {
   const AuthenticationWrapper({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, authProvider, child) {
-        if (authProvider.isSignedIn) {
-          return HomeScreen();
-        } else {
-          return LoginScreen();
-        }
-      },
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authProvider);
+    return user != null ? const HomeScreen() : const LoginScreen();
   }
 }
