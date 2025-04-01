@@ -39,7 +39,7 @@ class HomeScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceDim,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text("FlutChat"),
         actions: [

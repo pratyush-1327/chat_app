@@ -48,7 +48,6 @@ class _MainScreenState extends State<MainScreen> {
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onItemTapped,
       ),
-      extendBody: true,
     );
   }
 }
