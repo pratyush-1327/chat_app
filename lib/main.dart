@@ -5,9 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'firebase_options.dart';
 import 'features/auth/provider/auth_provider.dart';
-// import 'features/chat/repositories/chat_repository.dart';
 import 'screens/home_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
+import 'core/theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,8 +15,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FirebaseAppCheck.instance.activate(
-    androidProvider: AndroidProvider.playIntegrity, // For Android
-    // appleProvider: AppleProvider.deviceCheck, // For iOS
+    androidProvider: AndroidProvider.playIntegrity,
   );
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -29,19 +28,7 @@ class MyApp extends StatelessWidget {
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
         return MaterialApp(
-          theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.deepPurple,
-              brightness: Brightness.light,
-            ),
-            textTheme: const TextTheme(
-              displayLarge: TextStyle(
-                fontSize: 72,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+          theme: appTheme,
           debugShowCheckedModeBanner: false,
           home: const AuthenticationWrapper(),
         );
