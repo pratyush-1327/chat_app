@@ -1,3 +1,4 @@
+import 'package:FlutChat/core/theme/util.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -27,8 +28,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
+        final brightness =
+            View.of(context).platformDispatcher.platformBrightness;
+
+        TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
+
+        MaterialTheme theme = MaterialTheme(textTheme);
         return MaterialApp(
-          theme: appTheme,
+          theme: brightness == Brightness.light ? theme.light() : theme.dark(),
           debugShowCheckedModeBanner: false,
           home: const AuthenticationWrapper(),
         );

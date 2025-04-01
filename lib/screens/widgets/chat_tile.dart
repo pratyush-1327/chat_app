@@ -27,7 +27,9 @@ class ChatTile extends ConsumerWidget {
             : null,
         child: receiver.imageUrl.isEmpty ? const Icon(Icons.person) : null,
       ),
-      title: Text(receiver.name),
+      title: Text(
+        receiver.name,
+      ),
       subtitle: Text(lastMessage),
       trailing: Text(
         "${timestamp.hour}:${timestamp.minute}",
