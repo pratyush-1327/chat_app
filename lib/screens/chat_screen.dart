@@ -1,11 +1,13 @@
 import 'package:FlutChat/features/chat/repositories/chat_provider.dart';
 import 'package:FlutChat/models/chat_message.dart';
 import 'package:FlutChat/models/app_user.dart';
-import 'package:FlutChat/screens/widgets/message_bubble.dart';
+// import 'package:FlutChat/screens/widgets/message_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../features/chat/widgets/message_bubble.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String? chatId;
