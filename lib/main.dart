@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'firebase_options.dart';
 import 'features/auth/provider/auth_provider.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'core/theme/theme.dart';
 
@@ -22,7 +22,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           theme: brightness == Brightness.light ? theme.light() : theme.dark(),
           debugShowCheckedModeBanner: false,
-          home: const AuthenticationWrapper(),
+          home: const MainScreen(),
         );
       },
     );
@@ -50,6 +50,6 @@ class AuthenticationWrapper extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider);
-    return user != null ? const HomeScreen() : const LoginScreen();
+    return user != null ? const MainScreen() : const LoginScreen();
   }
 }
