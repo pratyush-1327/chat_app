@@ -87,4 +87,20 @@ class ChatProvider {
             .map((doc) => SearchResultModel.fromMap(doc.id, doc.data()))
             .toList());
   }
+
+  Future<void> deleteChat(String chatId) async {
+    // Delete the chat document from the chats collection
+    await _firestore.collection('chats').doc(chatId).delete();
+
+    // Delete all messages associated with the chat from the messages subcollection
+    final messages = await _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .get();
+
+    for (final message in messages.docs) {
+      await message.reference.delete();
+    }
+  }
 }
