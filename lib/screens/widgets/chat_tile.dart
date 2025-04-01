@@ -33,7 +33,7 @@ class ChatTile extends ConsumerWidget {
       subtitle: Text(lastMessage),
       trailing: Text(
         "${timestamp.hour}:${timestamp.minute}",
-        style: TextStyle(color: Colors.grey),
+        style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
       ),
       onLongPress: () {
         showDialog(

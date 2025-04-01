@@ -22,7 +22,9 @@ class MessageBubble extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isMe ? Colors.blueAccent : Colors.purpleAccent,
+          color: isMe
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -32,7 +34,9 @@ class MessageBubble extends StatelessWidget {
             Text(
               text,
               style: TextStyle(
-                color: isMe ? Colors.white : Colors.black87,
+                color: isMe
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : Theme.of(context).colorScheme.onBackground,
               ),
             ),
             const SizedBox(height: 4),
@@ -40,7 +44,12 @@ class MessageBubble extends StatelessWidget {
               _formatTimestamp(timestamp),
               style: TextStyle(
                 fontSize: 10,
-                color: isMe ? Colors.white70 : Colors.black54,
+                color: isMe
+                    ? Theme.of(context).colorScheme.onPrimary.withOpacity(0.7)
+                    : Theme.of(context)
+                        .colorScheme
+                        .onBackground
+                        .withOpacity(0.54),
               ),
             ),
           ],

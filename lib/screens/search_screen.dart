@@ -48,14 +48,18 @@ class SearchScreen extends ConsumerWidget {
                           final user = users[index];
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundColor: Colors.grey[200],
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.surface,
                               backgroundImage: (user.imageUrl != null &&
                                       user.imageUrl.isNotEmpty)
                                   ? NetworkImage(user.imageUrl)
                                   : null,
                               child: (user.imageUrl == null ||
                                       user.imageUrl.isEmpty)
-                                  ? const Icon(Icons.person, color: Colors.grey)
+                                  ? Icon(Icons.person,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onBackground)
                                   : null,
                             ),
                             title: Text(user.name),
