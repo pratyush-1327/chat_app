@@ -38,25 +38,38 @@ class HomeScreen extends ConsumerWidget {
       return const LoginScreen();
     }
 
+    final searchController = SearchController();
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text("FlutChat"),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
-            },
-            icon: Icon(
-              Icons.logout,
-              color: Theme.of(context).colorScheme.primary,
+        title: TextField(
+          controller: searchController,
+          readOnly: true,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SearchScreen()),
+            );
+          },
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.search,
+                color: Theme.of(context).colorScheme.primary),
+            hintText: 'Search',
+            hintStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
+            // border: InputBorder.none,
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide.none,
             ),
-          )
-        ],
+            contentPadding: EdgeInsets.symmetric(horizontal: 16),
+          ),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+        ),
+        actions: [],
       ),
       body: StreamBuilder<List<ChatRoom>>(
         stream: chatRepository.getChats(user.uid),
