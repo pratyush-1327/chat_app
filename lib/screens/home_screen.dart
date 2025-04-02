@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 import 'search_screen.dart';
 
@@ -62,10 +63,11 @@ class HomeScreen extends ConsumerWidget {
             filled: true,
             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(8.w), // Changed from 30
               borderSide: BorderSide.none,
             ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16),
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 4.w), // Changed from 16
           ),
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         ),

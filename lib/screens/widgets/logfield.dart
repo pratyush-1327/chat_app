@@ -38,28 +38,29 @@ class MyTextField extends StatelessWidget {
             child: TextFormField(
               keyboardType: keyboardType,
               style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary, fontSize: 18),
+                  color: Theme.of(context).colorScheme.primary,
+                  fontSize: 17.sp), // Changed from 18
               controller: controller,
               obscureText: obscureText,
               validator: validator,
               decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(4.w), // Changed from 15
                   borderSide: BorderSide(
-                    width: 2,
+                    width: 0.5.w, // Changed from 2
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(width: 0.2),
-                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(width: 0.1.w), // Changed from 0.2
+                  borderRadius: BorderRadius.circular(4.w), // Changed from 15
                 ),
                 fillColor:
                     Theme.of(context).colorScheme.surface.withOpacity(0.1),
                 filled: true,
                 hintText: hintText,
                 hintStyle: TextStyle(
-                  fontSize: 17,
+                  fontSize: 16.sp, // Changed from 17
                   color: Theme.of(context)
                       .colorScheme
                       .onSecondaryFixedVariant

@@ -2,6 +2,7 @@ import 'package:FlutChat/features/auth/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   @override
@@ -44,7 +45,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     return Scaffold(
       appBar: AppBar(title: Text('Sign Up')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(2.h), // Changed from 16.0
         child: Form(
           key: _formKey,
           child: Column(
@@ -56,7 +57,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter an email' : null,
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 1.2.h), // Changed from 10
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(labelText: 'Password'),
@@ -65,7 +66,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     ? 'Password must be at least 6 characters'
                     : null,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 2.5.h), // Changed from 20
               _isLoading
                   ? CircularProgressIndicator()
                   : ElevatedButton(

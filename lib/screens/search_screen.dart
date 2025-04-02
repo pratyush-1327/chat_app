@@ -4,6 +4,7 @@ import 'package:FlutChat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 final searchProvider = StateProvider<String>((ref) => '');
 
@@ -26,7 +27,7 @@ class SearchScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Search Users")),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(2.h), // Changed from 16.0
         child: Column(
           children: [
             TextField(
@@ -37,7 +38,7 @@ class SearchScreen extends ConsumerWidget {
                 suffixIcon: const Icon(Icons.search),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 2.h), // Changed from 16
             Expanded(
               child: searchResults.when(
                 data: (users) => users.isEmpty

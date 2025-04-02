@@ -3,6 +3,7 @@ import 'package:FlutChat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:FlutChat/features/chat/repositories/chat_provider.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ChatTile extends ConsumerWidget {
   final String chatId;
@@ -20,79 +21,88 @@ class ChatTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundImage: receiver.imageUrl.isNotEmpty
-            ? NetworkImage(receiver.imageUrl)
-            : null,
-        child: receiver.imageUrl.isEmpty ? const Icon(Icons.person) : null,
-      ),
-      title: Text(
-        receiver.name,
-      ),
-      subtitle: Text(lastMessage),
-      trailing: Text(
-        "${timestamp.hour}:${timestamp.minute}",
-        style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
-      ),
-      onLongPress: () {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Delete Chat"),
-              content: const Text("Are you sure you want to delete this chat?"),
-              actions: [
-                TextButton(
-                  child: const Text("Cancel"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text("Delete"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    ref.read(chatRepositoryProvider).deleteChat(chatId);
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      },
-      onTap: () {
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => ChatScreen(
-              receiverId: receiver.id,
-              chatId: chatId,
-            ),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              const beginOffset = Offset(1.0, 0.0);
-              const endOffset = Offset.zero;
-              const curve = Curves.easeInOut;
-
-              var tweenOffset = Tween(begin: beginOffset, end: endOffset)
-                  .chain(CurveTween(curve: curve));
-              var slideAnimation = animation.drive(tweenOffset);
-
-              var fadeAnimation =
-                  Tween(begin: 0.0, end: 1.0).animate(animation);
-
-              return SlideTransition(
-                position: slideAnimation,
-                child: FadeTransition(
-                  opacity: fadeAnimation,
-                  child: child,
-                ),
+    return Padding(
+      padding: EdgeInsets.only(top: 1.2.h), // Changed from 10
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundImage: receiver.imageUrl.isNotEmpty
+              ? NetworkImage(receiver.imageUrl, scale: 60)
+              : null,
+          child: receiver.imageUrl.isEmpty ? const Icon(Icons.person) : null,
+        ),
+        title: Text(
+          receiver.name,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        subtitle: Text(
+          lastMessage,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        trailing: Text(
+          "${timestamp.hour}:${timestamp.minute}",
+          style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
+        ),
+        onLongPress: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Delete Chat"),
+                content:
+                    const Text("Are you sure you want to delete this chat?"),
+                actions: [
+                  TextButton(
+                    child: const Text("Cancel"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: const Text("Delete"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      ref.read(chatRepositoryProvider).deleteChat(chatId);
+                    },
+                  ),
+                ],
               );
             },
-          ),
-        );
-      },
+          );
+        },
+        onTap: () {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  ChatScreen(
+                receiverId: receiver.id,
+                chatId: chatId,
+              ),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                const beginOffset = Offset(1.0, 0.0);
+                const endOffset = Offset.zero;
+                const curve = Curves.easeInOut;
+
+                var tweenOffset = Tween(begin: beginOffset, end: endOffset)
+                    .chain(CurveTween(curve: curve));
+                var slideAnimation = animation.drive(tweenOffset);
+
+                var fadeAnimation =
+                    Tween(begin: 0.0, end: 1.0).animate(animation);
+
+                return SlideTransition(
+                  position: slideAnimation,
+                  child: FadeTransition(
+                    opacity: fadeAnimation,
+                    child: child,
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }

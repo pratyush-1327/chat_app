@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 import '../features/chat/widgets/message_bubble.dart';
 
@@ -73,7 +74,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         ? const Icon(Icons.person)
                         : null,
                   ),
-                  SizedBox(width: 10),
+                  SizedBox(width: 2.w), // Changed from 10
                   Text(
                     receiver!.name,
                     style: TextStyle(
@@ -92,7 +93,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
           Container(
             color: Theme.of(context).colorScheme.surfaceContainerLowest,
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+            padding: EdgeInsets.symmetric(
+                vertical: 1.h, horizontal: 5.w), // Changed from 8, 20
             child: Row(
               children: [
                 Expanded(

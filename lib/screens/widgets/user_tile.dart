@@ -1,6 +1,7 @@
 import 'package:FlutChat/features/chat/repositories/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 // import '../../features/chat/repositories/chat_repository.dart';
 
 class UserTile extends ConsumerWidget {
@@ -23,7 +24,7 @@ class UserTile extends ConsumerWidget {
 
     return ListTile(
       leading: CircleAvatar(
-        radius: 25,
+        radius: 6.w, // Changed from 25
         backgroundImage: NetworkImage(imageUrl),
       ),
       title: Text(name),
