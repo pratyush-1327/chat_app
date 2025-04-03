@@ -22,21 +22,28 @@ class ChatTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: EdgeInsets.only(top: 1.2.h), // Changed from 10
+      padding: EdgeInsets.only(top: 2.h), // Changed from 10
       child: ListTile(
         leading: CircleAvatar(
+          radius: 20,
           backgroundImage: receiver.imageUrl.isNotEmpty
-              ? NetworkImage(receiver.imageUrl, scale: 60)
+              ? NetworkImage(receiver.imageUrl)
               : null,
           child: receiver.imageUrl.isEmpty ? const Icon(Icons.person) : null,
         ),
-        title: Text(
-          receiver.name,
-          style: Theme.of(context).textTheme.titleMedium,
+        title: Padding(
+          padding: const EdgeInsets.only(bottom: 7),
+          child: Text(
+            receiver.name,
+            style:
+                Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 20),
+          ),
         ),
         subtitle: Text(
           lastMessage,
-          style: Theme.of(context).textTheme.bodyLarge,
+          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              color:
+                  Theme.of(context).colorScheme.inverseSurface.withAlpha(170)),
         ),
         trailing: Text(
           "${timestamp.hour}:${timestamp.minute}",

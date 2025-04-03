@@ -119,7 +119,7 @@ class HomeScreen extends ConsumerWidget {
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.surfaceBright,
-        child: const Icon(Icons.search_rounded),
+        child: const Icon(Icons.edit),
       ),
     );
   }

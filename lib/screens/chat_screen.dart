@@ -63,6 +63,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceDim,
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Add this line
         title: receiver != null
             ? Row(
                 children: [
