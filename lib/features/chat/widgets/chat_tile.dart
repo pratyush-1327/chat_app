@@ -1,5 +1,5 @@
 import 'package:FlutChat/models/app_user.dart';
-import 'package:FlutChat/screens/chat_screen.dart';
+import 'package:FlutChat/features/chat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:FlutChat/features/chat/repositories/chat_provider.dart';

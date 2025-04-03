@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'chat_homepage.dart';
-import 'contacts_screen.dart';
+import '../features/chat/screens/chat_homepage.dart';
+import '../features/contacts/presentation/contacts_screen.dart';
 import 'settings_page.dart';
 
 class MainScreen extends StatefulWidget {

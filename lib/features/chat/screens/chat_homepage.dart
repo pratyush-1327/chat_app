@@ -3,8 +3,8 @@ import 'package:FlutChat/features/chat/repositories/chat_provider.dart';
 import 'package:FlutChat/models/app_user.dart';
 import 'package:FlutChat/models/chat_room.dart';
 import 'package:FlutChat/models/search_result_model.dart';
-import 'package:FlutChat/screens/chat_screen.dart';
-import 'package:FlutChat/screens/widgets/chat_tile.dart';
+import 'package:FlutChat/features/chat/screens/chat_screen.dart';
+import 'package:FlutChat/features/chat/widgets/chat_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,9 +33,7 @@ class HomeScreen extends ConsumerWidget {
           padding: EdgeInsets.only(top: 40, bottom: 10),
           child: ChatSearchBar(),
         ),
-        actions: [
-          // Optional: Add other actions if needed
-        ],
+
       ),
       body: StreamBuilder<List<ChatRoom>>(
         stream: chatProvider.getChats(user.uid),

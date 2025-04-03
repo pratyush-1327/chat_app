@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-import '../features/chat/widgets/message_bubble.dart';
+import '../widgets/message_bubble.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String? chatId;
@@ -94,8 +94,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
           Container(
             color: Theme.of(context).colorScheme.surfaceContainerLowest,
-            padding: EdgeInsets.symmetric(
-                vertical: 1.h, horizontal: 5.w), // Changed from 8, 20
+            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
             child: Row(
               children: [
                 Expanded(

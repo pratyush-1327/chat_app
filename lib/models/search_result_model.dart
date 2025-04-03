@@ -16,8 +16,7 @@ class SearchResultModel {
       userId: id,
       name: data['name'] ?? '',
       email: data['email'] ?? '',
-      imageUrl: data['imageUrl'] ??
-          '', // Changed from 'imageUrl' to 'imageUrl' to match AppUser model
+      imageUrl: data['imageUrl'] ?? '',
     );
   }
 

@@ -11,7 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 import 'login_screen.dart';
-import '../../../screens/widgets/logfield.dart';
+import 'logfield.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
@@ -49,9 +49,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     }
   }
 
-  // Consider making this more robust, e.g., handle potential null currentUser
   Future<String> _uploadImage(File image) async {
-    // Ensure user is logged in before trying to get UID for storage path
     final user = _auth.currentUser;
     if (user == null) {
       throw Exception("User not logged in during image upload.");
@@ -62,15 +60,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   }
 
   Future<void> _signUp() async {
-    // Validate form first
     if (!_formKey.currentState!.validate()) {
-      return; // Don't proceed if form is invalid
+      return;
     }
 
-    // Check for image
     if (_image == null) {
       Fluttertoast.showToast(msg: "Please select a profile image to continue");
-      return; // Don't proceed without image
+      return;
     }
 
     setState(() {
@@ -78,36 +74,31 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     });
 
     try {
-      // Create user
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
-              email: _emailController.text.trim(), // Trim input
-              password: _passController.text.trim()); // Trim input
+              email: _emailController.text.trim(),
+              password: _passController.text.trim());
 
-      // Upload image (ensure userCredential.user is not null)
       if (userCredential.user != null) {
-        final imageUrl = await _uploadImage(_image!); // Pass validated _image
+        final imageUrl = await _uploadImage(_image!);
 
         // Store user data in Firestore
         await _firestore.collection('users').doc(userCredential.user!.uid).set({
           'uid': userCredential.user!.uid,
           'email': _emailController.text.trim(),
-          'name': _nameController.text.trim(), // Trim input
+          'name': _nameController.text.trim(),
           'imageUrl': imageUrl,
-          'createdAt': Timestamp.now(), // Optional: add creation timestamp
+          'createdAt': Timestamp.now(),
         });
 
         Fluttertoast.showToast(msg: "Sign-Up was successful, Please Login");
 
-        // Navigate to LoginScreen after successful signup
         if (mounted) {
-          // Check if the widget is still in the tree
           Navigator.pushReplacement(
-            // Use pushReplacement to avoid back button to signup
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
-                  const LoginScreen(), // Use const
+                  const LoginScreen(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 const beginOffset = Offset(1.0, 0.0);
@@ -136,15 +127,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         throw Exception("User creation failed, user data is null.");
       }
     } on FirebaseAuthException catch (e) {
-      // Catch specific Firebase Auth errors
       print(e);
       Fluttertoast.showToast(msg: "Sign-Up failed: ${e.message ?? e.code}");
     } catch (e) {
-      // Catch other errors
       print(e);
       Fluttertoast.showToast(msg: "Sign-Up failed: ${e.toString()}");
     } finally {
-      // Ensure isLoading is set to false even if widget is disposed during async operation
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -155,187 +143,150 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // No need for Provider.of here, Riverpod handles state via AuthenticationWrapper
     return ResponsiveSizer(builder: (context, orientation, ScreenType) {
       return Scaffold(
-        resizeToAvoidBottomInset: true, // Allow resize when keyboard appears
-        body: SafeArea(
-          child: Container(
-            // Use Container for gradient background
-            height: double.infinity, // Ensure gradient covers full screen
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.primaryContainer.withAlpha(150),
-                  Theme.of(context).colorScheme.surface.withAlpha(100),
-                  Theme.of(context)
-                      .colorScheme
-                      .surfaceContainerHigh
-                      .withAlpha(120),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Center(
-              // Center the content vertically
-              child: SingleChildScrollView(
-                // Allow scrolling if content overflows
-                padding: EdgeInsets.symmetric(
-                    horizontal: 24.0), // Add horizontal padding
-                child: Form(
-                  key: _formKey,
-                  child: Column(
+        resizeToAvoidBottomInset: true,
+        body: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    // Add a title
+                    "Create Account",
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                  ),
+                  SizedBox(height: 30.sp),
+                  InkWell(
+                    onTap: _pickImage,
+                    child: CircleAvatar(
+                      radius: 35.sp,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.secondaryContainer,
+                      backgroundImage:
+                          _image != null ? FileImage(_image!) : null,
+                      child: _image == null
+                          ? Icon(
+                              Icons.camera_alt,
+                              size: 40.sp,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer,
+                            )
+                          : null,
+                    ),
+                  ),
+                  SizedBox(height: 10.sp),
+                  Text(
+                    "Tap to select profile picture",
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  SizedBox(height: 20.sp),
+                  MyTextField(
+                    keyboardType: TextInputType.name,
+                    hintText: "Enter your name",
+                    controller: _nameController,
+                    labeltext: "Name",
+                    obscureText: false,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        // Use trim()
+                        return "Please enter a name";
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 15.sp),
+                  MyTextField(
+                    keyboardType: TextInputType.emailAddress,
+                    hintText: "you@example.com",
+                    controller: _emailController,
+                    labeltext: "Email",
+                    obscureText: false,
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty ||
+                          !value.contains('@')) {
+                        // Basic email check
+                        return "Please enter a valid email";
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 15.sp),
+                  MyTextField(
+                    keyboardType: TextInputType.visiblePassword,
+                    hintText: "Enter your password",
+                    controller: _passController,
+                    labeltext: "Password",
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty ||
+                          value.length < 6) {
+                        return "Password must be at least 6 characters";
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 30.sp),
+                  _isLoading
+                      ? const CircularProgressIndicator() // Use const
+                      : FilledButton.tonal(
+                          style: FilledButton.styleFrom(
+                            minimumSize:
+                                Size(double.infinity, 50), // Make button wider
+                          ),
+                          onPressed: _signUp,
+                          child: Text(
+                            'Sign Up',
+                            style:
+                                TextStyle(fontSize: 18.sp), // Adjust font size
+                          ),
+                        ),
+                  SizedBox(height: 20.sp),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        // Add a title
-                        "Create Account",
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(
+                        "Already have an account?",
+                        style: TextStyle(fontSize: 16.sp),
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        const LoginScreen(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                      opacity: animation, child: child);
+                                },
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Login Now!",
+                            style: TextStyle(
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.primary,
                             ),
-                      ),
-                      SizedBox(height: 30.sp), // Spacing
-                      InkWell(
-                        onTap: _pickImage,
-                        child: CircleAvatar(
-                          // Use CircleAvatar for profile image
-                          radius: 50.sp, // Adjust size as needed
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          backgroundImage:
-                              _image != null ? FileImage(_image!) : null,
-                          child: _image == null
-                              ? Icon(
-                                  Icons.camera_alt,
-                                  size: 40.sp,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSecondaryContainer,
-                                )
-                              : null,
-                        ),
-                      ),
-                      SizedBox(height: 10.sp),
-                      Text(
-                        "Tap to select profile picture",
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      SizedBox(height: 20.sp), // Spacing
-                      MyTextField(
-                        keyboardType: TextInputType.name,
-                        hintText: "Enter your name",
-                        controller: _nameController,
-                        labeltext: "Name", // Simplified label
-                        obscureText: false,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            // Use trim()
-                            return "Please enter a name";
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 15.sp), // Spacing
-                      MyTextField(
-                        keyboardType: TextInputType.emailAddress,
-                        hintText: "you@example.com",
-                        controller: _emailController,
-                        labeltext: "Email", // Simplified label
-                        obscureText: false,
-                        validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty ||
-                              !value.contains('@')) {
-                            // Basic email check
-                            return "Please enter a valid email";
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 15.sp), // Spacing
-                      MyTextField(
-                        keyboardType: TextInputType.visiblePassword,
-                        hintText: "Enter your password",
-                        controller: _passController,
-                        labeltext: "Password", // Simplified label
-                        obscureText: true,
-                        validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty ||
-                              value.length < 6) {
-                            // Basic password check
-                            return "Password must be at least 6 characters";
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 30.sp), // Spacing
-                      _isLoading
-                          ? const CircularProgressIndicator() // Use const
-                          : FilledButton.tonal(
-                              // Use FilledButton.tonal for consistency
-                              style: FilledButton.styleFrom(
-                                // Use styleFrom
-                                minimumSize: Size(
-                                    double.infinity, 50), // Make button wider
-                                // padding: EdgeInsets.symmetric(vertical: 15.sp), // Adjust padding
-                              ),
-                              onPressed: _signUp,
-                              child: Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                    fontSize: 18.sp), // Adjust font size
-                              ),
-                            ),
-                      SizedBox(height: 20.sp), // Spacing
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Already have an account?",
-                            style: TextStyle(fontSize: 16.sp),
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                // Navigate back to Login Screen
-                                Navigator.pushReplacement(
-                                  // Use pushReplacement
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation,
-                                            secondaryAnimation) =>
-                                        const LoginScreen(), // Use const
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      // Simple Fade Transition
-                                      return FadeTransition(
-                                          opacity: animation, child: child);
-                                    },
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                "Login Now!",
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold, // Make it bolder
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primary, // Use primary color
-                                ),
-                              ))
-                        ],
-                      ),
+                          ))
                     ],
                   ),
-                ),
+                ],
               ),
             ),
           ),
