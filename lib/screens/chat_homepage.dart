@@ -2,6 +2,8 @@ import 'package:FlutChat/features/auth/presentation/login_screen.dart';
 import 'package:FlutChat/features/chat/repositories/chat_provider.dart';
 import 'package:FlutChat/models/app_user.dart';
 import 'package:FlutChat/models/chat_room.dart';
+import 'package:FlutChat/models/search_result_model.dart';
+import 'package:FlutChat/screens/chat_screen.dart';
 import 'package:FlutChat/screens/widgets/chat_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +11,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-import 'search_screen.dart';
+final searchProvider = StateProvider<String>((ref) => '');
+
+final searchResultsProvider = StreamProvider<List<SearchResultModel>>((ref) {
+  final query = ref.watch(searchProvider);
+
+  if (query.trim().isEmpty) return Stream.value([]);
+  final chatRepository = ref.read(chatRepositoryProvider);
+  return chatRepository.searchUsers(query);
+});
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -39,42 +49,156 @@ class HomeScreen extends ConsumerWidget {
       return const LoginScreen();
     }
 
-    final searchController = SearchController();
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: TextField(
-          controller: searchController,
-          readOnly: true,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SearchScreen()),
-            );
-          },
-          decoration: InputDecoration(
-            prefixIcon: Icon(Icons.search,
-                color: Theme.of(context).colorScheme.primary),
-            hintText: 'Search',
-            hintStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant),
-            // border: InputBorder.none,
-            filled: true,
-            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.w), // Changed from 30
-              borderSide: BorderSide.none,
-            ),
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 4.w), // Changed from 16
+        toolbarHeight: 100,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 40, bottom: 10),
+          child: SearchAnchor.bar(
+            barElevation: WidgetStateProperty.all(0),
+            barHintText: "Search users...",
+            onChanged: (query) {
+              // Use addPostFrameCallback to avoid modifying state during build
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (ref.read(searchProvider.notifier).state != query) {
+                  ref.read(searchProvider.notifier).state = query;
+                }
+              });
+            },
+            suggestionsBuilder:
+                (BuildContext context, SearchController controller) {
+              return [
+                Consumer(
+                  builder: (context, ref, child) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (ref.read(searchProvider.notifier).state !=
+                          controller.text) {
+                        ref.read(searchProvider.notifier).state =
+                            controller.text;
+                      }
+                    });
+
+                    final searchResults = ref.watch(searchResultsProvider);
+                    final chatRepo = ref.read(chatRepositoryProvider);
+
+                    return searchResults.when(
+                      data: (users) {
+                        if (controller.text.isEmpty) {
+                          return const Center(
+                              child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Start typing to search"),
+                          ));
+                        }
+                        if (users.isEmpty) {
+                          return const Center(
+                              child: Padding(
+                            // Add padding
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("No users found"),
+                          ));
+                        }
+
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: users.length,
+                          itemBuilder: (context, index) {
+                            final userResult = users[index];
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.surface,
+                                backgroundImage: (userResult.imageUrl != null &&
+                                        userResult.imageUrl.isNotEmpty)
+                                    ? NetworkImage(userResult.imageUrl)
+                                    : null,
+                                child: (userResult.imageUrl == null ||
+                                        userResult.imageUrl.isEmpty)
+                                    ? Icon(Icons.person,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onBackground)
+                                    : null,
+                              ),
+                              title: Text(userResult.name),
+                              subtitle: Text(userResult.email),
+                              onTap: () async {
+                                controller.closeView(userResult.name);
+
+                                final chatId = await chatRepo
+                                        .getChatRoom(userResult.userId) ??
+                                    await chatRepo
+                                        .createChatRoom(userResult.userId);
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        ChatScreen(
+                                      chatId: chatId,
+                                      receiverId: userResult.userId,
+                                    ),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      const beginOffset = Offset(1.0, 0.0);
+                                      const endOffset = Offset.zero;
+                                      const curve = Curves.easeInOut;
+
+                                      var tweenOffset = Tween(
+                                              begin: beginOffset,
+                                              end: endOffset)
+                                          .chain(CurveTween(curve: curve));
+                                      var slideAnimation =
+                                          animation.drive(tweenOffset);
+
+                                      var fadeAnimation =
+                                          Tween(begin: 0.0, end: 1.0)
+                                              .animate(animation);
+
+                                      return SlideTransition(
+                                        position: slideAnimation,
+                                        child: FadeTransition(
+                                          opacity: fadeAnimation,
+                                          child: child,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                      // Return a single widget for loading/error states
+                      loading: () => const Center(
+                          child: Padding(
+                        // Add padding
+                        padding: EdgeInsets.all(16.0),
+                        child: CircularProgressIndicator(),
+                      )),
+                      error: (err, stack) => Center(
+                          child: Padding(
+                        // Add padding
+                        padding: EdgeInsets.all(16.0),
+                        child: Text('Error: $err'),
+                      )),
+                    );
+                  },
+                ),
+              ]; // End list wrap
+            },
           ),
-          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         ),
-        actions: [],
+        actions: [
+          // Optional: Add other actions if needed
+        ],
       ),
+      // Main body showing existing chats
       body: StreamBuilder<List<ChatRoom>>(
-        stream: chatRepository.getChats(user.uid),
+        stream: chatRepository
+            .getChats(user.uid), // Use the instance from the top scope
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -112,15 +236,16 @@ class HomeScreen extends ConsumerWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const SearchScreen()),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.surfaceBright,
-        child: const Icon(Icons.edit),
-      ),
+      // Removed FloatingActionButton as search is now in AppBar
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () => Navigator.push(
+      //     context,
+      //     MaterialPageRoute(builder: (_) => const SearchScreen()),
+      //   ),
+      //   backgroundColor: Theme.of(context).colorScheme.primary,
+      //   foregroundColor: Theme.of(context).colorScheme.surfaceBright,
+      //   child: const Icon(Icons.edit),
+      // ),
     );
   }
 }

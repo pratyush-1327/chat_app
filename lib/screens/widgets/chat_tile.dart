@@ -25,7 +25,7 @@ class ChatTile extends ConsumerWidget {
       padding: EdgeInsets.only(top: 2.h), // Changed from 10
       child: ListTile(
         leading: CircleAvatar(
-          radius: 20,
+          radius: 30,
           backgroundImage: receiver.imageUrl.isNotEmpty
               ? NetworkImage(receiver.imageUrl)
               : null,
