@@ -1,13 +1,14 @@
 // lib/screens/login_screen.dart
 // import 'package:FlutChat/features/authentication/providers/auth_provider.dart';
 import 'package:FlutChat/features/auth/provider/auth_provider.dart';
-import 'package:FlutChat/screens/home_screen.dart';
+import 'package:FlutChat/screens/chat_homepage.dart';
 import 'package:FlutChat/features/auth/presentation/signup_screen.dart';
 import 'package:FlutChat/screens/widgets/logfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:FlutChat/screens/home_screen.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -21,21 +22,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
-
-  void login() async {
-    setState(() => isLoading = true);
-    try {
-      await ref
-          .read(authProvider.notifier)
-          .signIn(emailController.text, passwordController.text);
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const HomeScreen()));
-    } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
-    } finally {
-      setState(() => isLoading = false);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,5 +59,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       ),
     );
+  }
+
+  void login() async {
+    setState(() => isLoading = true);
+    try {
+      await ref
+          .read(authProvider.notifier)
+          .signIn(emailController.text, passwordController.text);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => const MainScreen()));
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 }

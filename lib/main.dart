@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'firebase_options.dart';
 import 'features/auth/provider/auth_provider.dart';
-import 'screens/main_screen.dart';
+import 'screens/home_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'core/theme/theme.dart';
 
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           theme: brightness == Brightness.light ? theme.light() : theme.dark(),
           debugShowCheckedModeBanner: false,
-          home: const MainScreen(),
+          home: const AuthenticationWrapper(), // Use the wrapper here
         );
       },
     );
