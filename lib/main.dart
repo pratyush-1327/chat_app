@@ -8,6 +8,7 @@ import 'firebase_options.dart';
 import 'features/auth/provider/auth_provider.dart';
 import 'screens/home_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
+import 'package:FlutChat/core/theme/theme_provider.dart';
 import 'core/theme/theme.dart';
 
 void main() async {
@@ -21,21 +22,27 @@ void main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
-        final brightness =
-            View.of(context).platformDispatcher.platformBrightness;
-
         TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
 
         MaterialTheme theme = MaterialTheme(textTheme);
         return MaterialApp(
-          theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+          theme: switch (themeMode) {
+            ThemeMode.light => theme.light(),
+            ThemeMode.dark => theme.dark(),
+            ThemeMode.system =>
+              View.of(context).platformDispatcher.platformBrightness ==
+                      Brightness.light
+                  ? theme.light()
+                  : theme.dark(),
+          },
           debugShowCheckedModeBanner: false,
           home: const AuthenticationWrapper(), // Use the wrapper here
         );

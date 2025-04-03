@@ -348,6 +348,23 @@ class MaterialTheme {
       );
 
   List<ExtendedColor> get extendedColors => [];
+
+  ThemeData getThemeData(BuildContext context, ThemeMode themeMode) {
+    if (themeMode == ThemeMode.light) {
+      return light();
+    }
+    if (themeMode == ThemeMode.dark) {
+      return dark();
+    }
+
+    // Default to system theme
+    return theme(
+      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+              Brightness.light
+          ? lightScheme()
+          : darkScheme(),
+    );
+  }
 }
 
 class ExtendedColor {

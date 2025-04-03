@@ -1,3 +1,4 @@
+import 'package:FlutChat/features/contacts/presentation/contact_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class ContactsScreen extends StatefulWidget {
@@ -48,6 +49,13 @@ class _ContactsScreenState extends State<ContactsScreen> {
                         .contains(controller.text.toLowerCase()))
                     .map<Widget>((contact) => ListTile(
                           title: Text(contact.name),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        const ContactProfileScreen()));
+                          },
                         ))
                     .toList();
               },
@@ -62,6 +70,12 @@ class _ContactsScreenState extends State<ContactsScreen> {
           return Padding(
             padding: const EdgeInsets.only(top: 16),
             child: ListTile(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const ContactProfileScreen()));
+              },
               leading: CircleAvatar(
                 radius: 30,
                 child: ClipRRect(
