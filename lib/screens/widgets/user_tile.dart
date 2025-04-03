@@ -24,7 +24,7 @@ class UserTile extends ConsumerWidget {
 
     return ListTile(
       leading: CircleAvatar(
-        radius: 6.w, // Changed from 25
+        radius: 6.w,
         backgroundImage: NetworkImage(imageUrl),
       ),
       title: Text(name),
@@ -32,7 +32,6 @@ class UserTile extends ConsumerWidget {
       onTap: () async {
         final chatId = await chatRepository.getChatRoom(userId) ??
             await chatRepository.createChatRoom(userId);
-        // Implement navigation logic here
       },
     );
   }

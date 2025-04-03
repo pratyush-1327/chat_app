@@ -1,6 +1,7 @@
 import 'package:FlutChat/models/chat_message.dart';
 import 'package:FlutChat/models/chat_room.dart';
 import 'package:FlutChat/models/search_result_model.dart';
+import 'package:FlutChat/models/app_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,6 +61,19 @@ class ChatProvider {
       if (chats.isNotEmpty) {
         return chats.first.id;
       }
+    }
+    return null;
+  }
+
+  Future<AppUser?> getReceiverData(List<String> users) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final receiverId =
+        users.firstWhere((id) => id != currentUser?.uid, orElse: () => '');
+    if (receiverId.isEmpty) return null;
+
+    final doc = await _firestore.collection('users').doc(receiverId).get();
+    if (doc.exists) {
+      return AppUser.fromMap(doc.id, doc.data()!);
     }
     return null;
   }
