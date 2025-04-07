@@ -1,13 +1,11 @@
 import 'package:FlutChat/core/theme/util.dart';
+import 'package:FlutChat/features/auth/provider/authwrap.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'firebase_options.dart';
-import 'features/auth/provider/auth_provider.dart';
-import 'screens/home_screen.dart';
-import 'features/auth/presentation/login_screen.dart';
 import 'package:FlutChat/core/theme/theme_provider.dart';
 import 'core/theme/theme.dart';
 
@@ -48,15 +46,5 @@ class MyApp extends ConsumerWidget {
         );
       },
     );
-  }
-}
-
-class AuthenticationWrapper extends ConsumerWidget {
-  const AuthenticationWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider);
-    return user != null ? const MainScreen() : const LoginScreen();
   }
 }

@@ -22,7 +22,7 @@ class ChatTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: EdgeInsets.only(top: 2.h), // Changed from 10
+      padding: EdgeInsets.only(top: 2.h),
       child: ListTile(
         leading: CircleAvatar(
           radius: 30,

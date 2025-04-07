@@ -24,7 +24,7 @@ class MessageBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: isMe
               ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.primary,
+              : Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -35,7 +35,7 @@ class MessageBubble extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       color: isMe
                           ? Theme.of(context).colorScheme.inversePrimary
-                          : Theme.of(context).colorScheme.inversePrimary,
+                          : Theme.of(context).colorScheme.secondaryFixedDim,
                     )),
             const SizedBox(height: 4),
             Text(_formatTimestamp(timestamp),

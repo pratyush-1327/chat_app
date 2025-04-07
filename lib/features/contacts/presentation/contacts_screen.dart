@@ -76,17 +76,9 @@ class _ContactsScreenState extends State<ContactsScreen> {
                     MaterialPageRoute(
                         builder: (_) => const ContactProfileScreen()));
               },
-              leading: CircleAvatar(
+              leading: const CircleAvatar(
                 radius: 30,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: Image(
-                    image: NetworkImage(contact.avatarUrl),
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                child: Icon(Icons.person),
               ),
               title: Text(contact.name),
             ),
@@ -99,18 +91,29 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
 class Contact {
   final String name;
-  final String avatarUrl;
 
-  Contact({required this.name, required this.avatarUrl});
+  Contact({required this.name});
 }
 
 final List<Contact> contacts = [
-  Contact(name: 'Alicia', avatarUrl: 'https://picsum.photos/100/100'),
-  Contact(name: 'Anthony', avatarUrl: 'https://picsum.photos/100/100'),
-  Contact(name: 'Ben', avatarUrl: 'https://picsum.photos/100/100'),
-  Contact(name: 'Bryan', avatarUrl: 'https://picsum.photos/100/100'),
-  Contact(name: 'Brianna', avatarUrl: 'https://picsum.photos/100/100'),
-  Contact(name: 'Cindy', avatarUrl: 'https://picsum.photos/100/100'),
-  Contact(name: 'Daisy', avatarUrl: 'https://picsum.photos/100/100'),
-  Contact(name: 'Diana', avatarUrl: 'https://picsum.photos/100/100'),
+  Contact(name: 'Alicia'),
+  Contact(name: 'Anthony'),
+  Contact(name: 'Ben'),
+  Contact(name: 'Bryan'),
+  Contact(name: 'Brianna'),
+  Contact(name: 'Cindy'),
+  Contact(name: 'Daisy'),
+  Contact(name: 'Diana'),
+  Contact(name: 'Edward'),
+  Contact(name: 'Emily'),
+  Contact(name: 'Frank'),
+  Contact(name: 'Grace'),
+  Contact(name: 'Hannah'),
+  Contact(name: 'Ian'),
+  Contact(name: 'Jack'),
+  Contact(name: 'Kelly'),
+  Contact(name: 'Liam'),
+  Contact(name: 'Mia'),
+  Contact(name: 'Noah'),
+  Contact(name: 'Olivia'),
 ];
