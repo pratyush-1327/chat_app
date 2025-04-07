@@ -11,7 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 import 'login_screen.dart';
-import 'logfield.dart';
+import 'widgets/textfield_widget.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});

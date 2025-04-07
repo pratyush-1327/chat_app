@@ -3,7 +3,7 @@
 import 'package:FlutChat/features/auth/provider/auth_provider.dart';
 import 'package:FlutChat/features/chat/screens/chat_homepage.dart';
 import 'package:FlutChat/features/auth/presentation/signup_screen.dart';
-import 'package:FlutChat/features/auth/presentation/logfield.dart';
+import 'package:FlutChat/features/auth/presentation/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';

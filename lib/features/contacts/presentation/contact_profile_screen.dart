@@ -84,9 +84,9 @@ class ContactProfileScreen extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 25,
-          backgroundColor: Theme.of(context).colorScheme.primaryFixedDim,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           child: IconButton(
-            icon: Icon(icon, color: Colors.white),
+            icon: Icon(icon, color: Theme.of(context).colorScheme.onPrimary),
             onPressed: onTap,
             tooltip: label,
           ),

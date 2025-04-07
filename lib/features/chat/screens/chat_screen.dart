@@ -111,34 +111,48 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    controller: _textController,
-                    decoration: InputDecoration(
-                        hintText: "Send message..", border: InputBorder.none),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5.w),
+                      child: TextFormField(
+                        controller: _textController,
+                        decoration: InputDecoration(
+                            hintText: "Send message...",
+                            border: InputBorder.none),
+                      ),
+                    ),
                   ),
                 ),
-                IconButton(
-                  onPressed: () async {
-                    if (_textController.text.isNotEmpty) {
-                      if (chatId == null || chatId!.isEmpty) {
-                        chatId = await chatRepository
-                            .createChatRoom(widget.receiverId);
+                SizedBox(width: 2.w),
+                CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  child: IconButton(
+                    onPressed: () async {
+                      if (_textController.text.isNotEmpty) {
+                        if (chatId == null || chatId!.isEmpty) {
+                          chatId = await chatRepository
+                              .createChatRoom(widget.receiverId);
+                        }
+                        if (chatId != null) {
+                          final message = ChatMessage(
+                            messageBody: _textController.text,
+                            senderId: loggedInUser!.uid,
+                            receiverId: widget.receiverId,
+                            timestamp: DateTime.now(),
+                          );
+                          chatRepository.sendMessage(chatId!, message);
+                          _textController.clear();
+                        }
                       }
-                      if (chatId != null) {
-                        final message = ChatMessage(
-                          messageBody: _textController.text,
-                          senderId: loggedInUser!.uid,
-                          receiverId: widget.receiverId,
-                          timestamp: DateTime.now(),
-                        );
-                        chatRepository.sendMessage(chatId!, message);
-                        _textController.clear();
-                      }
-                    }
-                  },
-                  icon: Icon(Icons.send),
-                  color: Theme.of(context).colorScheme.primary,
-                )
+                    },
+                    icon: Icon(Icons.send),
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
               ],
             ),
           )

@@ -32,7 +32,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
               ),
             ),
             SearchAnchor.bar(
-              barElevation: MaterialStateProperty.all(0.0),
+              barElevation: WidgetStatePropertyAll(0),
               viewHintText: "Search Contacts...",
               barHintText: "Search Contacts ...",
               searchController: searchController,

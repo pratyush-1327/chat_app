@@ -32,15 +32,9 @@ class MyApp extends ConsumerWidget {
 
         MaterialTheme theme = MaterialTheme(textTheme);
         return MaterialApp(
-          theme: switch (themeMode) {
-            ThemeMode.light => theme.light(),
-            ThemeMode.dark => theme.dark(),
-            ThemeMode.system =>
-              View.of(context).platformDispatcher.platformBrightness ==
-                      Brightness.light
-                  ? theme.light()
-                  : theme.dark(),
-          },
+          theme: theme.light(),
+          darkTheme: theme.dark(),
+          themeMode: themeMode,
           debugShowCheckedModeBanner: false,
           home: const AuthenticationWrapper(),
         );

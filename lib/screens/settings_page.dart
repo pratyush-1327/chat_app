@@ -1,9 +1,11 @@
 import 'package:FlutChat/features/auth/presentation/login_screen.dart';
 import 'package:FlutChat/features/auth/provider/auth_provider.dart';
+import 'package:FlutChat/core/theme/theme_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'appearance_page.dart';
+
+import '../features/auth/presentation/login_screen.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -11,6 +13,7 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appUser = ref.watch(authProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -80,13 +83,13 @@ class SettingsPage extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.remove_red_eye),
               title: const Text('Appearance'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AppearancePage()),
-                );
-              },
+              trailing: Switch(
+                value: themeMode == ThemeMode.dark,
+                onChanged: (value) {
+                  ref.read(themeModeProvider.notifier).state =
+                      value ? ThemeMode.dark : ThemeMode.light;
+                },
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.lock),
