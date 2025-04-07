@@ -157,7 +157,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    // Add a title
                     "Create Account",
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
@@ -198,7 +197,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     obscureText: false,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        // Use trim()
                         return "Please enter a name";
                       }
                       return null;
@@ -215,7 +213,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       if (value == null ||
                           value.trim().isEmpty ||
                           !value.contains('@')) {
-                        // Basic email check
                         return "Please enter a valid email";
                       }
                       return null;
@@ -239,17 +236,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                   SizedBox(height: 30.sp),
                   _isLoading
-                      ? const CircularProgressIndicator() // Use const
+                      ? const CircularProgressIndicator()
                       : FilledButton.tonal(
                           style: FilledButton.styleFrom(
-                            minimumSize:
-                                Size(double.infinity, 50), // Make button wider
+                            minimumSize: Size(double.infinity, 50),
                           ),
                           onPressed: _signUp,
                           child: Text(
                             'Sign Up',
-                            style:
-                                TextStyle(fontSize: 18.sp), // Adjust font size
+                            style: TextStyle(fontSize: 18.sp),
                           ),
                         ),
                   SizedBox(height: 20.sp),

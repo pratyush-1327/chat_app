@@ -63,7 +63,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceDim,
       appBar: AppBar(
-        automaticallyImplyLeading: false, // Add this line
         title: receiver != null
             ? Row(
                 children: [
@@ -75,16 +74,30 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         ? const Icon(Icons.person)
                         : null,
                   ),
-                  SizedBox(width: 2.w), // Changed from 10
+                  SizedBox(width: 2.w),
                   Text(
                     receiver!.name,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSecondaryFixed,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   )
                 ],
               )
             : const Text("Loading..."),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.call),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -93,7 +106,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 MessageStream(chatId: chatId ?? "", userId: loggedInUser!.uid),
           ),
           Container(
-            color: Theme.of(context).colorScheme.surfaceContainerLowest,
+            color: Theme.of(context).colorScheme.surfaceContainer,
             padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
             child: Row(
               children: [

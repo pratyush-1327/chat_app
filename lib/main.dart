@@ -44,7 +44,7 @@ class MyApp extends ConsumerWidget {
                   : theme.dark(),
           },
           debugShowCheckedModeBanner: false,
-          home: const AuthenticationWrapper(), // Use the wrapper here
+          home: const AuthenticationWrapper(),
         );
       },
     );

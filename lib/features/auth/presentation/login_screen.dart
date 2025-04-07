@@ -74,18 +74,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   },
                 ),
               ),
-              // SizedBox(height: 4.h),
+
               isLoading
                   ? const CircularProgressIndicator()
                   : FilledButton.tonal(
                       style: FilledButton.styleFrom(
-                        minimumSize: const Size(
-                            double.infinity, 50), // Make button wider
+                        minimumSize: const Size(double.infinity, 50),
                       ),
                       onPressed: login,
                       child: Text(
                         'Log In',
-                        style: TextStyle(fontSize: 18.sp), // Adjust font size
+                        style: TextStyle(fontSize: 18.sp),
                       ),
                     ),
               TextButton(

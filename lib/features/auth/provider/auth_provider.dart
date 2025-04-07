@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../models/app_user.dart';
 
 class AuthProvider {
   final FirebaseAuth _auth;
@@ -13,15 +14,14 @@ class AuthProvider {
         password: password,
       );
 
-      // Create user profile in Firestore
       if (userCredential.user != null) {
         await FirebaseFirestore.instance
             .collection('users')
             .doc(userCredential.user!.uid)
             .set({
-          'name': email.split('@')[0], // Default name based on email
+          'name': email.split('@')[0],
           'email': email,
-          'imageUrl': '', // Empty by default
+          'imageUrl': '',
           'createdAt': FieldValue.serverTimestamp(),
         });
       }
@@ -58,21 +58,47 @@ final AuthProviderProvider = Provider<AuthProvider>((ref) {
   return AuthProvider(firebaseAuth);
 });
 
-final authProvider = StateNotifierProvider<AuthNotifier, User?>((ref) {
+final authProvider = StateNotifierProvider<AuthNotifier, AppUser?>((ref) {
   final authRepo = ref.watch(AuthProviderProvider);
   return AuthNotifier(authRepo);
 });
 
-class AuthNotifier extends StateNotifier<User?> {
+//firebase app user data
+class AuthNotifier extends StateNotifier<AppUser?> {
   final AuthProvider _authRepository;
   AuthNotifier(this._authRepository) : super(null) {
-    _authRepository.authStateChanges.listen((user) => state = user);
+    _authRepository.authStateChanges.listen((user) async {
+      if (user != null) {
+        final snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (snapshot.exists) {
+          state = AppUser.fromMap(snapshot.id, snapshot.data()!);
+        } else {
+          state = null;
+        }
+      } else {
+        state = null;
+      }
+    });
   }
 
   Future<UserCredential?> signUp(String email, String password) async {
     final userCredential = await _authRepository.signUp(email, password);
     if (userCredential != null) {
-      state = userCredential.user;
+      // After signup, fetch and set the AppUser
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
+
+      if (snapshot.exists) {
+        state = AppUser.fromMap(snapshot.id, snapshot.data()!);
+      } else {
+        state = null;
+      }
     }
     return userCredential;
   }
@@ -80,7 +106,17 @@ class AuthNotifier extends StateNotifier<User?> {
   Future<UserCredential?> signIn(String email, String password) async {
     final userCredential = await _authRepository.signIn(email, password);
     if (userCredential != null) {
-      state = userCredential.user;
+      // After signin, fetch and set the AppUser
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
+
+      if (snapshot.exists) {
+        state = AppUser.fromMap(snapshot.id, snapshot.data()!);
+      } else {
+        state = null;
+      }
     }
     return userCredential;
   }

@@ -24,34 +24,26 @@ class MessageBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: isMe
               ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.secondary,
+              : Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           crossAxisAlignment:
               isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            Text(
-              text,
-              style: TextStyle(
-                color: isMe
-                    ? Theme.of(context).colorScheme.onPrimary
-                    : Theme.of(context).colorScheme.onBackground,
-              ),
-            ),
+            Text(text,
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: isMe
+                          ? Theme.of(context).colorScheme.inversePrimary
+                          : Theme.of(context).colorScheme.inversePrimary,
+                    )),
             const SizedBox(height: 4),
-            Text(
-              _formatTimestamp(timestamp),
-              style: TextStyle(
-                fontSize: 10,
-                color: isMe
-                    ? Theme.of(context).colorScheme.onPrimary.withOpacity(0.7)
-                    : Theme.of(context)
-                        .colorScheme
-                        .onBackground
-                        .withOpacity(0.54),
-              ),
-            ),
+            Text(_formatTimestamp(timestamp),
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: isMe
+                          ? Theme.of(context).colorScheme.inversePrimary
+                          : Theme.of(context).colorScheme.inversePrimary,
+                    )),
           ],
         ),
       ),

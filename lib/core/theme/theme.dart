@@ -357,7 +357,6 @@ class MaterialTheme {
       return dark();
     }
 
-    // Default to system theme
     return theme(
       WidgetsBinding.instance.platformDispatcher.platformBrightness ==
               Brightness.light

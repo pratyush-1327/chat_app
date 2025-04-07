@@ -10,7 +10,7 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider);
+    final appUser = ref.watch(authProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -38,9 +38,9 @@ class SettingsPage extends ConsumerWidget {
             ),
             Row(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 40,
-                  backgroundImage: NetworkImage(''), // Placeholder image
+                  backgroundImage: NetworkImage(appUser?.imageUrl ?? ''),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -48,11 +48,11 @@ class SettingsPage extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user?.email?.split('@')[0] ?? 'Daniel',
+                        appUser?.name ?? 'Daniel',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       Text(
-                        user?.email ?? '+14844578842',
+                        appUser?.email ?? '+14844578842',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],

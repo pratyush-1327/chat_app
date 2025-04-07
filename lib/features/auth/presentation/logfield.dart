@@ -8,7 +8,7 @@ class MyTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String hintText, labeltext;
   final bool obscureText;
-  final String? Function(String?)? validator; // Custom validator function
+  final String? Function(String?)? validator;
 
   const MyTextField({
     super.key,
@@ -39,28 +39,28 @@ class MyTextField extends StatelessWidget {
               keyboardType: keyboardType,
               style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
-                  fontSize: 17.sp), // Changed from 18
+                  fontSize: 17.sp),
               controller: controller,
               obscureText: obscureText,
               validator: validator,
               decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.w), // Changed from 15
+                  borderRadius: BorderRadius.circular(4.w),
                   borderSide: BorderSide(
-                    width: 0.5.w, // Changed from 2
+                    width: 0.5.w,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(width: 0.1.w), // Changed from 0.2
-                  borderRadius: BorderRadius.circular(4.w), // Changed from 15
+                  borderSide: BorderSide(width: 0.1.w),
+                  borderRadius: BorderRadius.circular(4.w),
                 ),
                 fillColor:
                     Theme.of(context).colorScheme.surface.withOpacity(0.1),
                 filled: true,
                 hintText: hintText,
                 hintStyle: TextStyle(
-                  fontSize: 16.sp, // Changed from 17
+                  fontSize: 16.sp,
                   color: Theme.of(context)
                       .colorScheme
                       .onSecondaryFixedVariant
