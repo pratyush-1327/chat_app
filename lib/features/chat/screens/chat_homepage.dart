@@ -12,12 +12,32 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:FlutChat/features/chat/provider/search_provider.dart';
 import 'package:FlutChat/features/chat/widgets/chat_search_bar.dart';
+import 'package:flutter/material.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  late final SearchController searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    searchController = SearchController();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final chatProvider = ref.watch(chatRepositoryProvider);
     final user = FirebaseAuth.instance.currentUser;
 
@@ -29,9 +49,9 @@ class HomeScreen extends ConsumerWidget {
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         toolbarHeight: 100,
-        title: const Padding(
-          padding: EdgeInsets.only(top: 40, bottom: 10),
-          child: ChatSearchBar(),
+        title: Padding(
+          padding: const EdgeInsets.only(top: 40, bottom: 10),
+          child: ChatSearchBar(searchController: searchController),
         ),
       ),
       body: StreamBuilder<List<ChatRoom>>(
@@ -74,8 +94,10 @@ class HomeScreen extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.edit),
+        onPressed: () {
+          searchController.openView();
+        },
+        child: const Icon(Icons.edit),
       ),
     );
   }

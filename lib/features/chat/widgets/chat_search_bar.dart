@@ -1,18 +1,21 @@
 import 'package:FlutChat/features/chat/provider/search_provider.dart';
 import 'package:FlutChat/features/chat/repositories/chat_provider.dart';
-import 'package:FlutChat/models/search_result_model.dart';
+// import 'package:FlutChat/models/search_result_model.dart';
 import 'package:FlutChat/features/chat/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatSearchBar extends ConsumerWidget {
-  const ChatSearchBar({super.key});
+  const ChatSearchBar({super.key, required this.searchController});
+
+  final SearchController searchController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SearchAnchor.bar(
       barElevation: WidgetStateProperty.all(0),
       barHintText: "Search users...",
+      searchController: searchController,
       onChanged: (query) {
         // Use addPostFrameCallback to avoid modifying state during build
         WidgetsBinding.instance.addPostFrameCallback((_) {
