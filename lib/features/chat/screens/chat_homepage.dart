@@ -33,7 +33,6 @@ class HomeScreen extends ConsumerWidget {
           padding: EdgeInsets.only(top: 40, bottom: 10),
           child: ChatSearchBar(),
         ),
-
       ),
       body: StreamBuilder<List<ChatRoom>>(
         stream: chatProvider.getChats(user.uid),
@@ -73,6 +72,10 @@ class HomeScreen extends ConsumerWidget {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.edit),
       ),
     );
   }

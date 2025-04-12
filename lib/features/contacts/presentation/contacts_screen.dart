@@ -85,6 +85,13 @@ class _ContactsScreenState extends State<ContactsScreen> {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(
+          Icons.add,
+          size: 36,
+        ),
+      ),
     );
   }
 }
