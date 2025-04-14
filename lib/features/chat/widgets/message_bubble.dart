@@ -25,8 +25,8 @@ class MessageBubble extends StatelessWidget {
               isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-              padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: isMe
                     ? Theme.of(context).colorScheme.primary

@@ -61,8 +61,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final TextEditingController _textController = TextEditingController();
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceDim,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
         title: receiver != null
             ? Row(
                 children: [
@@ -105,17 +106,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             child:
                 MessageStream(chatId: chatId ?? "", userId: loggedInUser!.uid),
           ),
-          Container(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+              child: Row(
+                children: [
+                  Expanded(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 5.w),
                       child: TextFormField(
@@ -126,34 +127,34 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ),
                     ),
                   ),
-                ),
-                SizedBox(width: 2.w),
-                CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  child: IconButton(
-                    onPressed: () async {
-                      if (_textController.text.isNotEmpty) {
-                        if (chatId == null || chatId!.isEmpty) {
-                          chatId = await chatRepository
-                              .createChatRoom(widget.receiverId);
+                  SizedBox(width: 2.w),
+                  CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    child: IconButton(
+                      onPressed: () async {
+                        if (_textController.text.isNotEmpty) {
+                          if (chatId == null || chatId!.isEmpty) {
+                            chatId = await chatRepository
+                                .createChatRoom(widget.receiverId);
+                          }
+                          if (chatId != null) {
+                            final message = ChatMessage(
+                              messageBody: _textController.text,
+                              senderId: loggedInUser!.uid,
+                              receiverId: widget.receiverId,
+                              timestamp: DateTime.now(),
+                            );
+                            chatRepository.sendMessage(chatId!, message);
+                            _textController.clear();
+                          }
                         }
-                        if (chatId != null) {
-                          final message = ChatMessage(
-                            messageBody: _textController.text,
-                            senderId: loggedInUser!.uid,
-                            receiverId: widget.receiverId,
-                            timestamp: DateTime.now(),
-                          );
-                          chatRepository.sendMessage(chatId!, message);
-                          _textController.clear();
-                        }
-                      }
-                    },
-                    icon: Icon(Icons.send),
-                    color: Theme.of(context).colorScheme.onPrimary,
+                      },
+                      icon: Icon(Icons.send),
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           )
         ],

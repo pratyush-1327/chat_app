@@ -36,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.contacts),
+            icon: Icon(Icons.person_rounded),
             label: 'Contacts',
           ),
           NavigationDestination(

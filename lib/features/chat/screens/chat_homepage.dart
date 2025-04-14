@@ -97,7 +97,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         onPressed: () {
           searchController.openView();
         },
-        child: const Icon(Icons.edit),
+        child: const Icon(
+          Icons.edit_outlined,
+          size: 30,
+        ),
       ),
     );
   }
