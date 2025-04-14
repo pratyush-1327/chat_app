@@ -1,3 +1,4 @@
+import 'package:FlutChat/features/contacts/presentation/add_contacts_page.dart';
 import 'package:FlutChat/features/contacts/presentation/contact_profile_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -89,7 +90,10 @@ class _ContactsScreenState extends State<ContactsScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const AddContactsPage()));
+        },
         child: Icon(
           Icons.add,
           size: 36,
