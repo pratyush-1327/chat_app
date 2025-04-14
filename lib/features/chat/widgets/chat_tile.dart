@@ -52,9 +52,20 @@ class ChatTile extends ConsumerWidget {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: const Text("Delete Chat"),
-                content:
-                    const Text("Are you sure you want to delete this chat?"),
+                title: Column(
+                  spacing: 20,
+                  children: [
+                    Icon(
+                      Icons.delete_forever_outlined,
+                      size: 30,
+                    ),
+                    Text("Delete Conversation"),
+                  ],
+                ),
+                content: Text(
+                  "This conversation will be removed from all your synced devices. This action cannot be undone.",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
                 actions: [
                   TextButton(
                     child: const Text("Cancel"),

@@ -1,6 +1,7 @@
 import 'package:FlutChat/features/auth/presentation/login_screen.dart';
 import 'package:FlutChat/features/auth/provider/auth_provider.dart';
 import 'package:FlutChat/core/theme/theme_provider.dart';
+import 'package:FlutChat/screens/notifications_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,7 +82,12 @@ class SettingsPage extends ConsumerWidget {
                 color: Theme.of(context).colorScheme.primary,
               ),
               title: const Text('Notifications'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const NotificationsPage()),
+                );
+              },
             ),
             ListTile(
               leading: Icon(
