@@ -61,7 +61,7 @@ class SettingsPage extends ConsumerWidget {
                     ],
                   ),
                 ),
-                TextButton(
+                FilledButton.tonal(
                   onPressed: () {},
                   child: const Text('Edit'),
                 ),
@@ -76,12 +76,18 @@ class SettingsPage extends ConsumerWidget {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.notifications),
+              leading: Icon(
+                Icons.notifications,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               title: const Text('Notifications'),
               onTap: () {},
             ),
             ListTile(
-              leading: const Icon(Icons.remove_red_eye),
+              leading: Icon(
+                Icons.remove_red_eye,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               title: const Text('Appearance'),
               trailing: Switch(
                 value: themeMode == ThemeMode.dark,
@@ -92,17 +98,26 @@ class SettingsPage extends ConsumerWidget {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.lock),
+              leading: Icon(
+                Icons.lock,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               title: const Text('Privacy'),
               onTap: () {},
             ),
             ListTile(
-              leading: const Icon(Icons.cloud),
+              leading: Icon(
+                Icons.cloud,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               title: const Text('Storage & Data'),
               onTap: () {},
             ),
             ListTile(
-              leading: const Icon(Icons.help),
+              leading: Icon(
+                Icons.help,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               title: const Text('About'),
               onTap: () {},
             ),

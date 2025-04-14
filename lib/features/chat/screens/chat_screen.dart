@@ -149,7 +149,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           }
                         }
                       },
-                      icon: Icon(Icons.send),
+                      icon: Icon(Icons.send_rounded),
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),

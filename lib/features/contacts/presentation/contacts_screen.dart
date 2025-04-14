@@ -16,7 +16,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 160,
+        // toolbarHeight: 160,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 20,
@@ -31,59 +31,63 @@ class _ContactsScreenState extends State<ContactsScreen> {
                     .copyWith(fontWeight: FontWeight.w500),
               ),
             ),
-            SearchAnchor.bar(
-              barElevation: WidgetStatePropertyAll(0),
-              viewHintText: "Search Contacts...",
-              barHintText: "Search Contacts ...",
-              searchController: searchController,
-              onChanged: (String value) {
-                setState(() {
-                  _searchString = value;
-                });
-              },
-              suggestionsBuilder:
-                  (BuildContext context, SearchController controller) {
-                return contacts
-                    .where((element) => element.name
-                        .toLowerCase()
-                        .contains(controller.text.toLowerCase()))
-                    .map<Widget>((contact) => ListTile(
-                          title: Text(contact.name),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) =>
-                                        const ContactProfileScreen()));
-                          },
-                        ))
-                    .toList();
-              },
-            ),
           ],
         ),
       ),
-      body: ListView.builder(
-        itemCount: contacts.length,
-        itemBuilder: (context, index) {
-          final contact = contacts[index];
-          return Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: ListTile(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const ContactProfileScreen()));
-              },
-              leading: const CircleAvatar(
-                radius: 30,
-                child: Icon(Icons.person),
-              ),
-              title: Text(contact.name),
-            ),
-          );
-        },
+      body: Column(
+        children: [
+          SearchAnchor.bar(
+            barElevation: WidgetStatePropertyAll(0),
+            viewHintText: "Search Contacts...",
+            barHintText: "Search Contacts ...",
+            searchController: searchController,
+            onChanged: (String value) {
+              setState(() {
+                _searchString = value;
+              });
+            },
+            suggestionsBuilder:
+                (BuildContext context, SearchController controller) {
+              return contacts
+                  .where((element) => element.name
+                      .toLowerCase()
+                      .contains(controller.text.toLowerCase()))
+                  .map<Widget>((contact) => ListTile(
+                        title: Text(contact.name),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) =>
+                                      const ContactProfileScreen()));
+                        },
+                      ))
+                  .toList();
+            },
+          ),
+          ListView.builder(
+            itemCount: contacts.length,
+            itemBuilder: (context, index) {
+              final contact = contacts[index];
+              return Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: ListTile(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const ContactProfileScreen()));
+                  },
+                  leading: const CircleAvatar(
+                    radius: 30,
+                    child: Icon(Icons.person),
+                  ),
+                  title: Text(contact.name),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
