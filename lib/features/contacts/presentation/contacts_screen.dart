@@ -96,7 +96,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
         },
         child: Icon(
           Icons.add,
-          size: 36,
+          // size: 36,
         ),
       ),
     );

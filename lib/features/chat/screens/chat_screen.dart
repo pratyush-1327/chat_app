@@ -61,9 +61,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final TextEditingController _textController = TextEditingController();
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: receiver != null
             ? Row(
                 children: [
@@ -115,7 +115,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ),
               padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
               child: Row(
+                spacing: 5,
                 children: [
+                  CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.attach_file_rounded),
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                  CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.camera_alt_rounded),
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 5.w),
@@ -128,30 +145,39 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ),
                   ),
                   SizedBox(width: 2.w),
-                  CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    child: IconButton(
-                      onPressed: () async {
-                        if (_textController.text.isNotEmpty) {
-                          if (chatId == null || chatId!.isEmpty) {
-                            chatId = await chatRepository
-                                .createChatRoom(widget.receiverId);
-                          }
-                          if (chatId != null) {
-                            final message = ChatMessage(
-                              messageBody: _textController.text,
-                              senderId: loggedInUser!.uid,
-                              receiverId: widget.receiverId,
-                              timestamp: DateTime.now(),
-                            );
-                            chatRepository.sendMessage(chatId!, message);
-                            _textController.clear();
-                          }
-                        }
-                      },
-                      icon: Icon(Icons.send_rounded),
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    ),
+                  ValueListenableBuilder(
+                    valueListenable: _textController,
+                    builder: (context, value, child) {
+                      return Visibility(
+                        visible: value.text.isNotEmpty,
+                        child: CircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          child: IconButton(
+                            onPressed: () async {
+                              if (_textController.text.isNotEmpty) {
+                                if (chatId == null || chatId!.isEmpty) {
+                                  chatId = await chatRepository
+                                      .createChatRoom(widget.receiverId);
+                                }
+                                if (chatId != null) {
+                                  final message = ChatMessage(
+                                    messageBody: _textController.text,
+                                    senderId: loggedInUser!.uid,
+                                    receiverId: widget.receiverId,
+                                    timestamp: DateTime.now(),
+                                  );
+                                  chatRepository.sendMessage(chatId!, message);
+                                  _textController.clear();
+                                }
+                              }
+                            },
+                            icon: Icon(Icons.send_rounded),
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
