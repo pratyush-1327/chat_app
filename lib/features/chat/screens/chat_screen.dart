@@ -110,18 +110,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(30),
               ),
               padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
               child: Row(
-                spacing: 5,
+                spacing: 10,
                 children: [
                   CircleAvatar(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     child: IconButton(
+                      icon: Icon(Icons.camera_alt_rounded),
                       onPressed: () {},
-                      icon: Icon(Icons.attach_file_rounded),
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
@@ -129,7 +129,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     child: IconButton(
                       onPressed: () {},
-                      icon: Icon(Icons.camera_alt_rounded),
+                      icon: Icon(Icons.attach_file_rounded),
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
@@ -139,6 +139,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       child: TextFormField(
                         controller: _textController,
                         decoration: InputDecoration(
+                            fillColor: Colors.red,
                             hintText: "Send message...",
                             border: InputBorder.none),
                       ),
