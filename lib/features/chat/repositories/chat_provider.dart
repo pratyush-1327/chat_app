@@ -12,14 +12,38 @@ class ChatProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+
+  final _chatRoomConverter = (
+    fromFirestore: ChatRoom.fromFirestore,
+    toFirestore: (ChatRoom room, _) => room.toFirestore(),
+  );
+
+  final _chatMessageConverter = (
+    fromFirestore: ChatMessage.fromFirestore,
+    toFirestore: (ChatMessage msg, _) => msg.toFirestore(),
+  );
+
+  final _appUserConverter = (
+    fromFirestore: AppUser.fromFirestore,
+    toFirestore: (AppUser user, _) => user.toFirestore(),
+  );
+
+  final _searchResultConverter = (
+    fromFirestore: SearchResultModel.fromFirestore,
+    toFirestore: (SearchResultModel result, _) => result.toFirestore(),
+  );
+
+
   Stream<List<ChatRoom>> getChats(String userId) {
     return _firestore
         .collection("chats")
+        .withConverter<ChatRoom>(
+              fromFirestore: _chatRoomConverter.fromFirestore,
+              toFirestore: _chatRoomConverter.toFirestore,
+            )
         .where('user', arrayContains: userId)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ChatRoom.fromMap(doc.id, doc.data()))
-            .toList());
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
   Stream<List<ChatMessage>> getMessages(String chatId) {
@@ -27,19 +51,27 @@ class ChatProvider {
         .collection('chats')
         .doc(chatId)
         .collection('messages')
+        .withConverter<ChatMessage>(
+              fromFirestore: _chatMessageConverter.fromFirestore,
+              toFirestore: _chatMessageConverter.toFirestore,
+            )
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ChatMessage.fromMap(doc.data()))
-            .toList());
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
   Future<void> sendMessage(String chatId, ChatMessage message) async {
+
+    final messageData = message.toFirestore()
+      ..['timestamp'] = FieldValue.serverTimestamp();
+
+
     await _firestore
         .collection('chats')
         .doc(chatId)
         .collection('messages')
-        .add(message.toMap());
+        .add(messageData);
+
 
     await _firestore.collection('chats').doc(chatId).set({
       'user': [message.senderId, message.receiverId],
@@ -47,6 +79,8 @@ class ChatProvider {
       'timestamp': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
+
+
 
   Future<String?> getChatRoom(String receiverId) async {
     final currentUser = _auth.currentUser;
@@ -71,22 +105,28 @@ class ChatProvider {
         users.firstWhere((id) => id != currentUser?.uid, orElse: () => '');
     if (receiverId.isEmpty) return null;
 
-    final doc = await _firestore.collection('users').doc(receiverId).get();
-    if (doc.exists) {
-      return AppUser.fromMap(doc.id, doc.data()!);
-    }
-    return null;
+    final docSnap = await _firestore
+        .collection('users')
+        .doc(receiverId)
+        .withConverter<AppUser>(
+              fromFirestore: _appUserConverter.fromFirestore,
+              toFirestore: _appUserConverter.toFirestore,
+            )
+        .get();
+
+    return docSnap.data();
   }
+
 
   Future<String> createChatRoom(String receiverId) async {
     final currentUser = _auth.currentUser;
     if (currentUser != null) {
-      final chatRoom = await _firestore.collection('chats').add({
+      final chatRoomRef = await _firestore.collection('chats').add({
         'user': [currentUser.uid, receiverId],
         'lastMessage': '',
         'timestamp': FieldValue.serverTimestamp(),
       });
-      return chatRoom.id;
+      return chatRoomRef.id;
     }
     throw Exception('Current User is null');
   }
@@ -94,19 +134,20 @@ class ChatProvider {
   Stream<List<SearchResultModel>> searchUsers(String query) {
     return _firestore
         .collection('users')
+        .withConverter<SearchResultModel>(
+              fromFirestore: _searchResultConverter.fromFirestore,
+              toFirestore: _searchResultConverter.toFirestore,
+            )
         .where('name', isGreaterThanOrEqualTo: query)
         .where('name', isLessThanOrEqualTo: query + '\uf8ff')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => SearchResultModel.fromMap(doc.id, doc.data()))
-            .toList());
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
+
   Future<void> deleteChat(String chatId) async {
-    // Delete the chat document from the chats collection
     await _firestore.collection('chats').doc(chatId).delete();
 
-    // Delete all messages associated with the chat from the messages subcollection
     final messages = await _firestore
         .collection('chats')
         .doc(chatId)

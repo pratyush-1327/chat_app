@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AppUser {
   final String id;
   final String name;
@@ -18,6 +20,27 @@ class AppUser {
       email: map['email'],
       imageUrl: map['imageUrl'] ?? '',
     );
+  }
+
+  factory AppUser.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    final data = snapshot.data();
+    return AppUser(
+      id: snapshot.id,
+      name: data?['name'] ?? '',
+      email: data?['email'] ?? '',
+      imageUrl: data?['imageUrl'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'name': name,
+      'email': email,
+      'imageUrl': imageUrl,
+    };
   }
 
   Map<String, dynamic> toMap() {

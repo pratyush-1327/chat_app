@@ -18,16 +18,45 @@ class ChatMessage {
       senderId: map['senderId'],
       receiverId: map['receiverId'],
       messageBody: map['messageBody'],
-      timestamp: (map['timestamp'] as Timestamp).toDate(),
+      timestamp: (map['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
-  Map<String, dynamic> toMap() {
+  factory ChatMessage.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    final data = snapshot.data();
+    return ChatMessage(
+      senderId: data?['senderId'] ?? '',
+      receiverId: data?['receiverId'] ?? '',
+      messageBody: data?['messageBody'] ?? '',
+      timestamp: (data?['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
     return {
       'senderId': senderId,
       'receiverId': receiverId,
       'messageBody': messageBody,
-      'timestamp': timestamp,
     };
+  }
+
+  ChatMessage copyWith({
+    String? senderId,
+    String? receiverId,
+    String? messageBody,
+    DateTime? timestamp,
+    dynamic firestoreTimestamp,
+  }) {
+    return ChatMessage(
+      senderId: senderId ?? this.senderId,
+      receiverId: receiverId ?? this.receiverId,
+      messageBody: messageBody ?? this.messageBody,
+      timestamp: firestoreTimestamp is FieldValue
+          ? DateTime.now()
+          : (timestamp ?? this.timestamp),
+    );
   }
 }

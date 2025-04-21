@@ -18,15 +18,35 @@ class ChatRoom {
       id: id,
       users: List<String>.from(map['user']),
       lastMessage: map['lastMessage'] ?? '',
-      timestamp: (map['timestamp'] as Timestamp).toDate(),
+      timestamp: (map['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
+  }
+
+  factory ChatRoom.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    final data = snapshot.data();
+    return ChatRoom(
+      id: snapshot.id,
+      users: data?['user'] is Iterable ? List<String>.from(data?['user']) : [],
+      lastMessage: data?['lastMessage'] ?? '',
+      timestamp: (data?['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'user': users,
+      'lastMessage': lastMessage,
+    };
   }
 
   Map<String, dynamic> toMap() {
     return {
       'user': users,
       'lastMessage': lastMessage,
-      'timestamp': timestamp,
+      'timestamp': Timestamp.fromDate(timestamp), 
     };
   }
 }
