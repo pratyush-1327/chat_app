@@ -4,6 +4,7 @@ A real-time chat application built with Flutter and Firebase.
 
 ## ✨ Features
 
+
 *   **Authentication:** Secure user login and registration using Firebase Auth.
 *   **Real-time Chat:** Send and receive messages instantly with Cloud Firestore.
 *   **Contact Management:** View and interact with contacts (Implementation details TBD based on `lib/features/contacts/`).
